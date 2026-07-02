@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dr. Yalung Appointment</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .form-container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #34495e;
+            font-weight: 600;
+        }
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        textarea {
+            resize: vertical;
+            height: 80px;
+        }
+        button {
+            width: 100%;
+            background-color: #3498db;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        #message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+            display: none;
+            font-weight: bold;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+  <center><img src="https://www.image2url.com/r2/default/images/1782022944770-7a8e4b4c-a5a6-4f1b-b164-aa1d514db85e.png" alt="Company Logo" width="50"> <img src="https://www.image2url.com/r2/default/images/1782022901500-ad384d18-f457-4dfe-8fe2-aa6500d3d910.png" alt="Company Logo" width="50"></center>
+</a><h2><strong>Antipolo City Health Office</strong></h2>
+<center><p><strong>Dr. Alvin L. Yalung</strong></p></center>
+<center><p>(30 Patients) Appointments Monday & Wednesday</p></center>
+	<center><p><strong>Hotline : ☎ 09165344707 / 8697-0362 / 8689-4518 / 8689-4097</strong></p></center>
+	<center><p><strong>Effective September 2, 2026</strong></p></center>
+    <form id="appointmentForm">
+        <div class="form-group">
+            <label for="date">Preferred Date</label>
+            <input type="date" id="date" name="date" required>
+        </div>
+    <div class="form-group">
+        <label for="opd">OPD Number</label>
+        <input type="text" id="opd" name="opd" placeholder="Enter OPD Number" required>
+    </div>
+
+	    <div class="form-group">
+        <label for="type">New / Old Patient</label>
+        <input type="text" id="type" name="type" placeholder="Enter Old or New" required>
+    </div>
+	
+		
+        <div class="form-group">
+            <label for="name">Patient Full Name</label>
+            <input type="text" id="name" name="name" placeholder="Juan Dela Cruz" required>
+        </div>
+        <div class="form-group">
+            <label for="age">Age</label>
+            <input type="number" id="age" name="age" min="0" max="120" placeholder="30" required>
+        </div>
+        <div class="form-group">
+            <label for="address">Address</label>
+            <textarea id="address" name="address" placeholder="123 Street, Antipolo City" required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="contact">Contact Number</label>
+            <input type="text" id="contact" name="contact" placeholder="e.g., +1234567890" required>
+        </div>
+        <button type="submit" id="submitBtn">Submit Appointment</button>
+    </form>
+    
+    <div id="message"></div>
+</div>
+
+<script>
+    // Prevent selecting past dates
+    const dateInput = document.getElementById('date');
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.setAttribute('min', today);
+
+    const form = document.getElementById('appointmentForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const messageDiv = document.getElementById('message');
+
+    // REPLACE THIS WITH YOUR GOOGLE WEB APP URL
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzWeCmHxv5M9vcbxiyxU5HULxExkFJ6P3UgkOTppYCBYvhCjUzcfzKXzIIMpmncwOL5/exec';
+
+    form.addEventListener('submit', e => {
+        e.preventDefault();
+        
+        // UI Feedback during submission
+        submitBtn.disabled = true;
+        submitBtn.innerText = "Checking availability...";
+        messageDiv.style.display = "none";
+
+        // Convert form data into URL-encoded format for Apps Script
+        const formData = new FormData(form);
+        const keyValuePairs = [];
+        for (let pair of formData.entries()) {
+            keyValuePairs.push(encodeURIComponent(pair[0]) + "=" + encodeURIComponent(pair[1]));
+        }
+        const formDataString = keyValuePairs.join("&");
+
+        // Send data to Google Sheets script
+        fetch(scriptURL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: formDataString
+        })
+        .then(response => response.json())
+        .then(data => {
+            messageDiv.style.display = "block";
+            messageDiv.innerText = data.message;
+            
+            if (data.result === 'success') {
+                messageDiv.className = "success";
+                form.reset(); // Clear form on success
+            } else {
+                messageDiv.className = "error";
+            }
+        })
+        .catch(error => {
+            messageDiv.style.display = "block";
+            messageDiv.className = "error";
+            messageDiv.innerText = "An error occurred. Please try again later.";
+            console.error('Error!', error.message);
+        })
+        .finally(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerText = "Submit Appointment";
+        });
+    });
+</script>
+
+<script>
+dateInput.addEventListener('change', function () {
+    const selectedDate = new Date(this.value);
+    const day = selectedDate.getDay();
+
+    let isOpen = false;
+    let message = "";
+
+    switch (day) {
+        case 0: // Sunday
+            isOpen = true;
+            message = "Registration is OPEN for Monday checkups.";
+            break;
+
+        case 1: // Monday
+            message = "Registration is CLOSED. Monday is a checkup day.";
+            break;
+
+        case 2: // Tuesday
+            isOpen = true;
+            message = "Registration is OPEN for Wednesday checkups.";
+            break;
+
+        case 3: // Wednesday
+            message = "Registration is CLOSED. Wednesday is a checkup day.";
+            break;
+
+        default:
+            message = "Registration is CLOSED on this day.";
+    }
+
+    messageDiv.style.display = "block";
+    messageDiv.className = isOpen ? "success" : "error";
+    messageDiv.innerText = message;
+
+    submitBtn.disabled = !isOpen;
+
+    if (!isOpen) {
+        this.value = "";
+    }
+});
+</script>
+</body>
+</html>
