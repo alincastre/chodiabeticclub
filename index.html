@@ -96,6 +96,58 @@ padding:15px;
 color:#777;
 font-size:14px;
 }
+.dashboard{
+
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:15px;
+    margin:20px 0;
+
+}
+
+.card{
+
+    color:#fff;
+    border-radius:15px;
+    padding:20px;
+    text-align:center;
+    box-shadow:0 10px 25px rgba(0,0,0,.15);
+
+}
+
+.blue{
+background:#1976D2;
+}
+
+.green{
+background:#43A047;
+}
+
+.orange{
+background:#FB8C00;
+}
+
+.icon{
+
+font-size:28px;
+
+}
+
+.title{
+
+margin-top:8px;
+font-size:15px;
+
+}
+
+.number{
+
+font-size:42px;
+font-weight:bold;
+margin-top:10px;
+
+}
+
     </style>
 </head>
 <body>
@@ -107,6 +159,29 @@ font-size:14px;
 <center><p>(30 Patients) Appointments Monday & Wednesday</p></center>
 	<center><p><strong>Hotline : ☎ 09165344707 / 8697-0362 / 8689-4518 / 8689-4097</strong></p></center>
 	<center><p><strong>Effective September 2, 2026</strong></p></center>
+	
+	<div class="dashboard">
+
+    <div class="card blue">
+        <div class="icon">👥</div>
+        <div class="title">Total Registered Patients</div>
+        <div id="totalPatients" class="number">0</div>
+    </div>
+
+    <div class="card green">
+        <div class="icon">📅</div>
+        <div class="title">Today's Registration</div>
+        <div id="todayPatients" class="number">0</div>
+    </div>
+
+    <div class="card orange">
+        <div class="icon">🟢</div>
+        <div class="title">Remaining Slots</div>
+        <div id="remainingSlots" class="number">30</div>
+    </div>
+
+</div>
+	
     <form id="appointmentForm">
         <div class="form-group">
             <label for="date">Preferred Date</label>
@@ -114,7 +189,7 @@ font-size:14px;
         </div>
     <div class="form-group">
         <label for="opd">OPD Number</label>
-        <input type="text" id="opd" name="opd" placeholder="Enter OPD Number if OLD / if New N/A" required>
+        <input type="text" id="opd" name="opd" placeholder="Enter OPD Number / N / A for New" required>
     </div>
 
 	    <div class="form-group">
@@ -252,5 +327,29 @@ dateInput.addEventListener('change', function () {
     }
 });
 </script>
+
+<script>
+const scriptURL = "https://script.google.com/macros/s/AKfycbxns4zz2C25_W2kNJqt4TRs1b5VaPNWSWOj-GwbVTB98pADyS4KfkpXHDG7_fE0DKr3/exec";
+
+function loadDashboard() {
+
+    fetch(scriptURL)
+    .then(response => response.json())
+    .then(data => {
+
+        console.log(data);   // Check browser console
+
+        document.getElementById("totalPatients").textContent = data.total;
+        document.getElementById("todayPatients").textContent = data.today;
+        document.getElementById("remainingSlots").textContent = data.remaining;
+
+    })
+    .catch(error => console.error(error));
+
+}
+
+window.onload = loadDashboard;
+</script>
+
 </body>
 </html>
