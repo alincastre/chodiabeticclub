@@ -268,6 +268,7 @@ Antipolo City Health Office Diabetic Club<br>  Coded by: Erwin R. Alincastre. Al
             if (data.result === 'success') {
                 messageDiv.className = "success";
                 form.reset(); // Clear form on success
+                if(typeof loadDashboard==="function"){setTimeout(loadDashboard,500);}
             } else {
                 messageDiv.className = "error";
             }
@@ -329,19 +330,19 @@ dateInput.addEventListener('change', function () {
 </script>
 
 <script>
-const scriptURL = "https://script.google.com/macros/s/AKfycbxns4zz2C25_W2kNJqt4TRs1b5VaPNWSWOj-GwbVTB98pADyS4KfkpXHDG7_fE0DKr3/exec";
+const dashboardURL = "https://script.google.com/macros/s/AKfycbxns4zz2C25_W2kNJqt4TRs1b5VaPNWSWOj-GwbVTB98pADyS4KfkpXHDG7_fE0DKr3/exec";
 
 function loadDashboard() {
 
-    fetch(scriptURL)
+    fetch(dashboardURL)
     .then(response => response.json())
     .then(data => {
 
         console.log(data);   // Check browser console
 
-        document.getElementById("totalPatients").textContent = data.total;
-        document.getElementById("todayPatients").textContent = data.today;
-        document.getElementById("remainingSlots").textContent = data.remaining;
+        document.getElementById("totalPatients").textContent = data.totalPatients;
+        document.getElementById("todayPatients").textContent = data.todayRegistration;
+        document.getElementById("remainingSlots").textContent = data.remainingSlots;
 
     })
     .catch(error => console.error(error));
