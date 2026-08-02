@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dr. Yalung Appointment</title>
+    <title>Dr. Yalung Appointment System</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -22,229 +22,480 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             width: 100%;
             max-width: 500px;
+            position: relative;
         }
-        h2 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 20px;
+        h2 { text-align: center; color: #2c3e50; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; color: #34495e; font-weight: 600; }
+        input[type="text"], input[type="number"], input[type="date"], textarea {
+            width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px;
+            text-transform: capitalize;
         }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            color: #34495e;
-            font-weight: 600;
-        }
-        input[type="text"],
-        input[type="number"],
-        input[type="date"],
-        textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 16px;
-        }
-        textarea {
-            resize: vertical;
-            height: 80px;
-        }
+        #opd, #type { text-transform: uppercase; }
+        #contact { text-transform: none; }
+        textarea { resize: vertical; height: 80px; }
+        
         button {
-            width: 100%;
-            background-color: #3498db;
-            color: white;
-            padding: 12px;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
+            width: 100%; background-color: #3498db; color: white; padding: 12px; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; font-weight: bold; transition: background-color 0.3s;
+        }
+        button:hover { background-color: #2980b9; }
+        button:disabled { background-color: #bdc3c7; cursor: not-allowed; }
+        
+        #message { margin-top: 15px; padding: 10px; border-radius: 4px; text-align: center; display: none; font-weight: bold; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .footer { text-align: center; padding: 15px; color: #777; font-size: 14px; }
+        
+        /* Schedule Guide Collapsible Accordion */
+        .guide-accordion {
+            background-color: #e8f4f8;
+            border: 1px solid #bce8f1;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        .guide-header {
+            padding: 10px 15px;
+            font-weight: bold;
+            color: #2c3e50;
             cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
         }
-        button:hover {
-            background-color: #2980b9;
-        }
-        button:disabled {
-            background-color: #bdc3c7;
-            cursor: not-allowed;
-        }
-        #message {
-            margin-top: 15px;
-            padding: 10px;
-            border-radius: 4px;
-            text-align: center;
+        .guide-content {
+            padding: 0 15px 12px 15px;
+            font-size: 13px;
+            color: #555;
             display: none;
-            font-weight: bold;
+            line-height: 1.5;
         }
-        .success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+
+        /* Dashboard Banner Style */
+        .dashboard-card {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            transition: background 0.5s ease;
         }
-        .error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+        .dashboard-card.warning {
+            background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
         }
-		
-		.footer{
-text-align:center;
-padding:15px;
-color:#777;
-font-size:14px;
-}
-.dashboard{
+        .dashboard-title { text-align: center; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; opacity: 0.9; }
+        .dashboard-grid { display: flex; justify-content: space-around; text-align: center; }
+        .dashboard-item { flex: 1; padding: 5px; }
+        .dashboard-item:first-child { border-right: 1px solid rgba(255,255,255,0.2); }
+        .dashboard-number { font-size: 26px; font-weight: bold; }
+        .dashboard-label { font-size: 12px; opacity: 0.85; margin-top: 2px; }
 
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-    gap:15px;
-    margin:20px 0;
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block; width: 16px; height: 16px; border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite; margin-right: 8px; vertical-align: middle;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-}
+        /* Confirmation Modal / Pop-up Window */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+        .modal-box {
+            background: white;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 420px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .modal-header { border-bottom: 2px solid #3498db; padding-bottom: 10px; margin-bottom: 15px; text-align: center; }
+        .modal-header h3 { margin: 0; color: #2c3e50; }
+        .modal-body p { margin: 8px 0; font-size: 14px; color: #444; border-bottom: 1px dashed #eee; padding-bottom: 4px; }
+        .modal-body strong { color: #2c3e50; }
+        .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-confirm { background-color: #27ae60; }
+        .btn-confirm:hover { background-color: #219150; }
+        .btn-cancel { background-color: #e74c3c; }
+        .btn-cancel:hover { background-color: #c0392b; }
 
-.card{
+        /* Smart Animated Checkmark Icon */
+        .checkmark-wrapper {
+            display: none;
+            text-align: center;
+            margin: 15px 0;
+        }
+        .checkmark-circle {
+            width: 54px;
+            height: 54px;
+            background: #27ae60;
+            border-radius: 50%;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 30px;
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 10px rgba(39, 174, 96, 0.4);
+        }
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
 
-    color:#fff;
-    border-radius:15px;
-    padding:20px;
-    text-align:center;
-    box-shadow:0 10px 25px rgba(0,0,0,.15);
+        /* Printable Receipt Slip */
+        #appointmentSlip {
+            display: none; border: 2px dashed #2c3e50; padding: 20px; border-radius: 8px; background-color: #fafafa; margin-top: 20px;
+            scroll-margin-top: 30px;
+        }
+        .slip-header { text-align: center; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 10px; }
+        .slip-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
+        .slip-label { font-weight: bold; color: #555; }
+        .print-btn { background-color: #27ae60; margin-top: 15px; }
+        .print-btn:hover { background-color: #219150; }
 
-}
-
-.blue{
-background:#1976D2;
-}
-
-.green{
-background:#43A047;
-}
-
-.orange{
-background:#FB8C00;
-}
-
-.icon{
-
-font-size:28px;
-
-}
-
-.title{
-
-margin-top:8px;
-font-size:15px;
-
-}
-
-.number{
-
-font-size:42px;
-font-weight:bold;
-margin-top:10px;
-
-}
-
+        @media print {
+            body * { visibility: hidden; }
+            #appointmentSlip, #appointmentSlip * { visibility: visible; }
+            #appointmentSlip { position: absolute; left: 0; top: 0; width: 100%; border: none; }
+            .print-btn { display: none; }
+        }
     </style>
 </head>
 <body>
 
 <div class="form-container">
-  <center><img src="https://www.image2url.com/r2/default/images/1782022944770-7a8e4b4c-a5a6-4f1b-b164-aa1d514db85e.png" alt="Company Logo" width="50"> <img src="https://www.image2url.com/r2/default/images/1782022901500-ad384d18-f457-4dfe-8fe2-aa6500d3d910.png" alt="Company Logo" width="50"></center>
-</a><h2><strong>Antipolo City Health Office</strong></h2>
-<center><p><strong>Dr. Alvin L. Yalung</strong></p></center>
-<center><p>(30 Patients) Appointments Monday & Wednesday</p></center>
-	<center><p><strong>Hotline : ☎ 09165344707 / 8697-0362 / 8689-4518 / 8689-4097</strong></p></center>
-	<center><p><strong>Effective September 2, 2026</strong></p></center>
-	
-	<div class="dashboard">
+    <center>
+        <img src="https://www.image2url.com/r2/default/images/1782022944770-7a8e4b4c-a5a6-4f1b-b164-aa1d514db85e.png" alt="Company Logo" width="50"> 
+        <img src="https://www.image2url.com/r2/default/images/1782022901500-ad384d18-f457-4dfe-8fe2-aa6500d3d910.png" alt="Company Logo" width="50">
+    </center>
+    <h2><strong>Antipolo City Health Office</strong></h2>
+    <center><p><strong>Dr. Alvin L. Yalung</strong></p></center>
+    <center><p>(30 Patients) Appointments Monday & Wednesday</p></center>
+    <center><p><strong>Hotline : ☎ 09165344707 / 8697-0362 / 8689-4518 / 8689-4097</strong></p></center>
+    <center><p style="margin-bottom: 15px;"><strong>Effective September 2, 2026</strong></p></center>
 
-    <div class="card blue">
-        <div class="icon">👥</div>
-        <div class="title">Total Registered Patients</div>
-        <div id="totalPatients" class="number">0</div>
+    <!-- INTERACTIVE SCHEDULE GUIDE ACCORDION -->
+    <div class="guide-accordion">
+        <div class="guide-header" onclick="toggleGuide()">
+            <span>📅 Paano at Kailan Mag-Register?</span>
+            <span id="guideIcon">▼</span>
+        </div>
+        <div id="guideContent" class="guide-content">
+            • <strong>Para sa MONDAY Checkup:</strong><br>Open ang online registration tuwing <em>Sabado at Linggo</em>.<br><br>
+            • <strong>Para sa WEDNESDAY Checkup:</strong><br>Open ang online registration tuwing <em>Lunes at Martes</em>.<br><br>
+            • <strong>Limit:</strong> Unang 30 patients lamang bawat clinic day.
+        </div>
+    </div>
+    
+    <!-- DASHBOARD BANNER -->
+    <div id="dashboardCard" class="dashboard-card">
+        <div id="dashboardDateText" class="dashboard-title">Live Slot Counter</div>
+        <div class="dashboard-grid">
+            <div class="dashboard-item">
+                <div id="totalRegistered" class="dashboard-number">--</div>
+                <div class="dashboard-label">Total Registered</div>
+            </div>
+            <div class="dashboard-item">
+                <div id="slotsRemaining" class="dashboard-number" style="color: #2ecc71;">--</div>
+                <div class="dashboard-label">Slots Remaining</div>
+            </div>
+        </div>
     </div>
 
-    <div class="card green">
-        <div class="icon">📅</div>
-        <div class="title">Today's Registration</div>
-        <div id="todayPatients" class="number">0</div>
-    </div>
-
-    <div class="card orange">
-        <div class="icon">🟢</div>
-        <div class="title">Remaining Slots</div>
-        <div id="remainingSlots" class="number">30</div>
-    </div>
-
-</div>
-	
+    <!-- MAIN FORM -->
     <form id="appointmentForm">
         <div class="form-group">
             <label for="date">Preferred Date</label>
             <input type="date" id="date" name="date" required>
         </div>
-    <div class="form-group">
-        <label for="opd">OPD Number</label>
-        <input type="text" id="opd" name="opd" placeholder="Enter OPD Number / N / A for New" required>
-    </div>
 
-	    <div class="form-group">
-        <label for="type">New / Old Patient</label>
-        <input type="text" id="type" name="type" placeholder="Enter Old or New" required>
-    </div>
-	
-		
+        <div class="form-group">
+            <label for="opd">OPD Number</label>
+            <input type="text" id="opd" name="opd" placeholder="Enter OPD Number / N/A for New" required>
+        </div>
+
+        <div class="form-group">
+            <label for="type">New / Old Patient</label>
+            <input type="text" id="type" name="type" placeholder="Enter OLD or NEW" required>
+        </div>
+
         <div class="form-group">
             <label for="name">Patient Full Name</label>
             <input type="text" id="name" name="name" placeholder="Juan Dela Cruz" required>
         </div>
+
         <div class="form-group">
             <label for="age">Age</label>
             <input type="number" id="age" name="age" min="0" max="120" placeholder="30" required>
         </div>
+
         <div class="form-group">
             <label for="address">Address</label>
             <textarea id="address" name="address" placeholder="123 Street, Antipolo City" required></textarea>
         </div>
+
         <div class="form-group">
             <label for="contact">Contact Number</label>
-            <input type="text" id="contact" name="contact" placeholder="e.g., +1234567890" required>
+            <input type="text" id="contact" name="contact" placeholder="09XX-XXX-XXXX" maxlength="13" required>
         </div>
-        <button type="submit" id="submitBtn">Submit Appointment</button>
+
+        <button type="button" id="reviewBtn" onclick="openConfirmationModal()">Review & Submit</button>
     </form>
     
+    <!-- ANIMATED SUCCESS CHECKMARK -->
+    <div id="checkmarkWrapper" class="checkmark-wrapper">
+        <div class="checkmark-circle">✓</div>
+    </div>
+
     <div id="message"></div>
-<div class="footer">
-Antipolo City Health Office Diabetic Club<br>  Coded by: Erwin R. Alincastre. All Rights Reserved.
+
+    <!-- PRINTABLE SLIP / CONFIRMATION RECEIPT -->
+    <div id="appointmentSlip">
+        <div class="slip-header">
+            <h3 style="margin:0; color:#2c3e50;">APPOINTMENT SLIP</h3>
+            <p style="margin:5px 0 0 0; font-size:12px; color:#777;">Antipolo City Health Office - Diabetic Club</p>
+        </div>
+        <div class="slip-row"><span class="slip-label">Ref Code:</span><span id="slipRef">--</span></div>
+        <div class="slip-row"><span class="slip-label">Booked On:</span><span id="slipTimestamp" style="font-size:12px; color:#27ae60; font-weight:bold;">--</span></div>
+        <div class="slip-row"><span class="slip-label">Appointment Date:</span><span id="slipDate">--</span></div>
+        <div class="slip-row"><span class="slip-label">Patient Name:</span><span id="slipName">--</span></div>
+        <div class="slip-row"><span class="slip-label">OPD Number:</span><span id="slipOpd">--</span></div>
+        <div class="slip-row"><span class="slip-label">Doctor:</span><span>Dr. Alvin L. Yalung</span></div>
+        <p style="font-size:11px; color:#888; text-align:center; margin-top:15px;">Please screenshot and show this slip upon check-up.</p>
+        <button type="button" class="print-btn" onclick="window.print()">🖨 Print / Save as PDF</button>
+    </div>
+
+    <div class="footer">
+        Antipolo City Health Office Diabetic Club<br> Coded by: Erwin R. Alincastre. All Rights Reserved.
+    </div>
 </div>
+
+<!-- CONFIRMATION POPUP MODAL -->
+<div id="confirmationModal" class="modal-overlay">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3>Kumpirmahin ang Detalye</h3>
+        </div>
+        <div class="modal-body">
+            <p><strong>Checkup Date:</strong> <span id="confirmDate">--</span></p>
+            <p><strong>Full Name:</strong> <span id="confirmName">--</span></p>
+            <p><strong>OPD Number:</strong> <span id="confirmOpd">--</span></p>
+            <p><strong>Patient Type:</strong> <span id="confirmType">--</span></p>
+            <p><strong>Age:</strong> <span id="confirmAge">--</span></p>
+            <p><strong>Contact:</strong> <span id="confirmContact">--</span></p>
+            <p><strong>Address:</strong> <span id="confirmAddress">--</span></p>
+        </div>
+        <div class="modal-actions">
+            <button type="button" class="btn-cancel" onclick="closeConfirmationModal()">Bumalik / Baguhin</button>
+            <button type="button" id="submitBtn" class="btn-confirm" onclick="processFormSubmit()">I-Submit Agad</button>
+        </div>
+    </div>
 </div>
 
 <script>
-    // Prevent selecting past dates
     const dateInput = document.getElementById('date');
-    const today = new Date().toISOString().split('T')[0];
-    dateInput.setAttribute('min', today);
+    const todayStr = new Date().toISOString().split('T')[0];
+    dateInput.setAttribute('min', todayStr);
 
     const form = document.getElementById('appointmentForm');
     const submitBtn = document.getElementById('submitBtn');
     const messageDiv = document.getElementById('message');
+    const contactInput = document.getElementById('contact');
+    
+    const dashboardCard = document.getElementById('dashboardCard');
+    const totalRegisteredEl = document.getElementById('totalRegistered');
+    const slotsRemainingEl = document.getElementById('slotsRemaining');
+    const dashboardDateText = document.getElementById('dashboardDateText');
 
-    // REPLACE THIS WITH YOUR GOOGLE WEB APP URL
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbzWeCmHxv5M9vcbxiyxU5HULxExkFJ6P3UgkOTppYCBYvhCjUzcfzKXzIIMpmncwOL5/exec';
+    // PALITAN ITO NG IYONG GUMAGANANG WEB APP URL MULA SA GOOGLE APPS SCRIPT
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbxk7f5DNb_arTSHJr6GHffGcgmw3aX9rlSt2kse_OomjNryr_UO9sOGsolUi2vlSXLojw/exec';
 
-    form.addEventListener('submit', e => {
-        e.preventDefault();
+    // 1. Accordion Toggle
+    function toggleGuide() {
+        const content = document.getElementById('guideContent');
+        const icon = document.getElementById('guideIcon');
+        if (content.style.display === "block") {
+            content.style.display = "none";
+            icon.innerText = "▼";
+        } else {
+            content.style.display = "block";
+            icon.innerText = "▲";
+        }
+    }
+
+    // 2. Mobile Phone Input Auto-Formatting (09XX-XXX-XXXX)
+    contactInput.addEventListener('input', function(e) {
+        let x = e.target.value.replace(/\D/g, '').match(/(\d{0,4})(\d{0,3})(\d{0,4})/);
+        e.target.value = !x[2] ? x[1] : `${x[1]}-${x[2]}` + (x[3] ? `-${x[3]}` : '');
+    });
+
+    // 3. Fetch Slot Count
+    function fetchSlotCount(dateStr) {
+        totalRegisteredEl.innerText = "...";
+        slotsRemainingEl.innerText = "...";
+        dashboardDateText.innerHTML = `<span class="spinner"></span> Checking slots for: ${dateStr}`;
+        dashboardCard.classList.remove('warning');
+
+        fetch(`${scriptURL}?action=getSlots&date=${dateStr}`)
+            .then(res => res.json())
+            .then(data => {
+                dashboardDateText.innerText = `Slots for: ${dateStr}`;
+                totalRegisteredEl.innerText = data.totalRegistered;
+                slotsRemainingEl.innerText = data.slotsRemaining;
+
+                if (data.slotsRemaining <= 5 && data.slotsRemaining > 0) {
+                    dashboardCard.classList.add('warning'); 
+                    slotsRemainingEl.style.color = "#fff";
+                } else if (data.slotsRemaining <= 0) {
+                    messageDiv.style.display = "block";
+                    messageDiv.className = "error";
+                    messageDiv.innerText = "Sorry, all 30 slots for this date are fully booked!";
+                    document.getElementById('reviewBtn').disabled = true;
+                    slotsRemainingEl.style.color = "#e74c3c";
+                } else {
+                    slotsRemainingEl.style.color = "#2ecc71";
+                    document.getElementById('reviewBtn').disabled = false;
+                }
+            })
+            .catch(err => {
+                console.error("Error fetching slots:", err);
+                dashboardDateText.innerText = "Select a valid Date";
+            });
+    }
+
+    // 4. Schedule Rules Validation
+    dateInput.addEventListener('change', function () {
+        const selectedDateStr = this.value;
+        if (!selectedDateStr) return;
+
+        const selectedDate = new Date(selectedDateStr + "T00:00:00");
+        const selectedDay = selectedDate.getDay();
         
-        // UI Feedback during submission
-        submitBtn.disabled = true;
-        submitBtn.innerText = "Checking availability...";
-        messageDiv.style.display = "none";
+        const todayObj = new Date();
+        const currentDay = todayObj.getDay();
+        
+        let isOpen = false;
+        let message = "";
 
-        // Convert form data into URL-encoded format for Apps Script
+        if (selectedDay !== 1 && selectedDay !== 3) {
+            messageDiv.style.display = "block";
+            messageDiv.className = "error";
+            messageDiv.innerText = "Mali ang napiling araw. Ang Checkup ay tuwing LUNES at MIYERKULES lamang.";
+            document.getElementById('reviewBtn').disabled = true;
+            this.value = "";
+            totalRegisteredEl.innerText = "--";
+            slotsRemainingEl.innerText = "--";
+            dashboardDateText.innerText = "Pumili ng Lunes o Miyerkules";
+            dashboardCard.classList.remove('warning');
+            return;
+        }
+
+        if (selectedDay === 1) { 
+            if (currentDay === 6 || currentDay === 0) { 
+                isOpen = true;
+                message = "OPEN ang Registration para sa Checkup sa MONDAY!";
+            } else {
+                isOpen = false;
+                message = "CLOSED. Ang registration para sa Monday checkup ay tuwing SABADO at LINGGO lamang.";
+            }
+        } else if (selectedDay === 3) { 
+            if (currentDay === 1 || currentDay === 2) { 
+                isOpen = true;
+                message = "OPEN ang Registration para sa Checkup sa WEDNESDAY!";
+            } else {
+                isOpen = false;
+                message = "CLOSED. Ang registration para sa Wednesday checkup ay tuwing LUNES at MARTES lamang.";
+            }
+        }
+
+        messageDiv.style.display = "block";
+        messageDiv.className = isOpen ? "success" : "error";
+        messageDiv.innerText = message;
+
+        if (!isOpen) {
+            document.getElementById('reviewBtn').disabled = true;
+            this.value = "";
+            totalRegisteredEl.innerText = "--";
+            slotsRemainingEl.innerText = "--";
+            dashboardDateText.innerText = "Registration Closed";
+            dashboardCard.classList.remove('warning');
+            return;
+        }
+
+        document.getElementById('reviewBtn').disabled = false;
+        fetchSlotCount(selectedDateStr);
+    });
+
+    // 5. Auto-Detect Current Registration Window
+    function autoCheckTodaySlot() {
+        const todayObj = new Date();
+        const currentDay = todayObj.getDay();
+        let targetDate = new Date();
+
+        if (currentDay === 6) targetDate.setDate(todayObj.getDate() + 2);
+        else if (currentDay === 0) targetDate.setDate(todayObj.getDate() + 1);
+        else if (currentDay === 1) targetDate.setDate(todayObj.getDate() + 2);
+        else if (currentDay === 2) targetDate.setDate(todayObj.getDate() + 1);
+        else {
+            dashboardDateText.innerText = "Registration Currently Closed";
+            totalRegisteredEl.innerText = "0";
+            slotsRemainingEl.innerText = "0";
+            document.getElementById('reviewBtn').disabled = true;
+            return;
+        }
+
+        const formattedDate = targetDate.toISOString().split('T')[0];
+        dateInput.value = formattedDate;
+        dateInput.dispatchEvent(new Event('change'));
+    }
+
+    window.addEventListener('DOMContentLoaded', autoCheckTodaySlot);
+
+    // 6. Confirmation Modal Handlers
+    function openConfirmationModal() {
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        document.getElementById('confirmDate').innerText = document.getElementById('date').value;
+        document.getElementById('confirmName').innerText = document.getElementById('name').value;
+        document.getElementById('confirmOpd').innerText = document.getElementById('opd').value.toUpperCase();
+        document.getElementById('confirmType').innerText = document.getElementById('type').value.toUpperCase();
+        document.getElementById('confirmAge').innerText = document.getElementById('age').value;
+        document.getElementById('confirmContact').innerText = document.getElementById('contact').value;
+        document.getElementById('confirmAddress').innerText = document.getElementById('address').value;
+
+        document.getElementById('confirmationModal').style.display = 'flex';
+    }
+
+    function closeConfirmationModal() {
+        document.getElementById('confirmationModal').style.display = 'none';
+    }
+
+    // 7. Form Submission with Checkmark Animation & Auto-Scroll
+    function processFormSubmit() {
+        closeConfirmationModal();
+        
+        submitBtn.disabled = true;
+        document.getElementById('reviewBtn').disabled = true;
+        document.getElementById('reviewBtn').innerHTML = `<span class="spinner"></span> Submitting...`;
+        messageDiv.style.display = "none";
+        document.getElementById('checkmarkWrapper').style.display = "none";
+
         const formData = new FormData(form);
         const keyValuePairs = [];
         for (let pair of formData.entries()) {
@@ -252,105 +503,88 @@ Antipolo City Health Office Diabetic Club<br>  Coded by: Erwin R. Alincastre. Al
         }
         const formDataString = keyValuePairs.join("&");
 
-        // Send data to Google Sheets script
         fetch(scriptURL, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: formDataString
         })
         .then(response => response.json())
         .then(data => {
             messageDiv.style.display = "block";
-            messageDiv.innerText = data.message;
             
             if (data.result === 'success') {
                 messageDiv.className = "success";
-                form.reset(); // Clear form on success
-                if(typeof loadDashboard==="function"){setTimeout(loadDashboard,500);}
+                messageDiv.innerText = "Appointment successfully registered!";
+                
+                // Show Animated Green Checkmark
+                document.getElementById('checkmarkWrapper').style.display = "block";
+
+                // Generate Time-Stamp (e.g. Aug 2, 2026, 1:10 PM)
+                const now = new Date();
+                const timeString = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ", " + 
+                                   now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                
+                // Populate Printable Slip
+                document.getElementById('slipRef').innerText = "ACHO-" + Math.floor(100000 + Math.random() * 900000);
+                document.getElementById('slipTimestamp').innerText = timeString;
+                document.getElementById('slipDate').innerText = document.getElementById('date').value;
+                document.getElementById('slipName').innerText = document.getElementById('name').value;
+                document.getElementById('slipOpd').innerText = document.getElementById('opd').value.toUpperCase();
+                
+                const slipElement = document.getElementById('appointmentSlip');
+                slipElement.style.display = "block";
+
+                // Auto-Scroll to Slip smoothly
+                setTimeout(() => {
+                    slipElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 300);
+
+                const savedDate = dateInput.value;
+                form.reset();
+                if (savedDate) fetchSlotCount(savedDate);
             } else {
                 messageDiv.className = "error";
+                messageDiv.innerText = data.message;
             }
         })
         .catch(error => {
             messageDiv.style.display = "block";
             messageDiv.className = "error";
             messageDiv.innerText = "An error occurred. Please try again later.";
-            console.error('Error!', error.message);
         })
         .finally(() => {
             submitBtn.disabled = false;
-            submitBtn.innerText = "Submit Appointment";
+            document.getElementById('reviewBtn').disabled = false;
+            document.getElementById('reviewBtn').innerText = "Review & Submit";
         });
-    });
+    }
 </script>
-
 <script>
-dateInput.addEventListener('change', function () {
-    const selectedDate = new Date(this.value);
-    const day = selectedDate.getDay();
+// 1. Disable Right-Click
+document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+});
 
-    let isOpen = false;
-    let message = "";
-
-    switch (day) {
-        case 0: // Sunday
-            isOpen = true;
-            message = "Registration is OPEN for Monday checkups.";
-            break;
-
-        case 1: // Monday
-            message = "Registration is CLOSED. Monday is a checkup day.";
-            break;
-
-        case 2: // Tuesday
-            isOpen = true;
-            message = "Registration is OPEN for Wednesday checkups.";
-            break;
-
-        case 3: // Wednesday
-            message = "Registration is CLOSED. Wednesday is a checkup day.";
-            break;
-
-        default:
-            message = "Registration is CLOSED on this day.";
+// 2. Disable Key Shortcuts for Inspect Element & View Source
+document.addEventListener('keydown', function(e) {
+    // Disable F12
+    if (e.key === 'F12' || e.keyCode === 123) {
+        e.preventDefault();
+        return false;
+    }
+    
+    // Disable Ctrl+Shift+I (Inspect), Ctrl+Shift+J (Console), Ctrl+Shift+C (Element Picker)
+    if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) {
+        e.preventDefault();
+        return false;
     }
 
-    messageDiv.style.display = "block";
-    messageDiv.className = isOpen ? "success" : "error";
-    messageDiv.innerText = message;
-
-    submitBtn.disabled = !isOpen;
-
-    if (!isOpen) {
-        this.value = "";
+    // Disable Ctrl+U (View Source) and Ctrl+S (Save Page)
+    if (e.ctrlKey && (e.key === 'u' || e.key === 'U' || e.key === 's' || e.key === 'S')) {
+        e.preventDefault();
+        return false;
     }
 });
 </script>
-
-<script>
-const dashboardURL = "https://script.google.com/macros/s/AKfycbxns4zz2C25_W2kNJqt4TRs1b5VaPNWSWOj-GwbVTB98pADyS4KfkpXHDG7_fE0DKr3/exec";
-
-function loadDashboard() {
-
-    fetch(dashboardURL)
-    .then(response => response.json())
-    .then(data => {
-
-        console.log(data);   // Check browser console
-
-        document.getElementById("totalPatients").textContent = data.totalPatients;
-        document.getElementById("todayPatients").textContent = data.todayRegistration;
-        document.getElementById("remainingSlots").textContent = data.remainingSlots;
-
-    })
-    .catch(error => console.error(error));
-
-}
-
-window.onload = loadDashboard;
-</script>
-
 </body>
 </html>
