@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dr. Yalung Appointment System</title>
+    <!-- html2canvas library for converting HTML element to Image -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -163,14 +165,21 @@
         .slip-header { text-align: center; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 10px; }
         .slip-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
         .slip-label { font-weight: bold; color: #555; }
-        .print-btn { background-color: #27ae60; margin-top: 15px; }
+        .slip-action-btns {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .print-btn { background-color: #27ae60; }
         .print-btn:hover { background-color: #219150; }
+        .image-btn { background-color: #e67e22; }
+        .image-btn:hover { background-color: #d35400; }
 
         @media print {
             body * { visibility: hidden; }
             #appointmentSlip, #appointmentSlip * { visibility: visible; }
             #appointmentSlip { position: absolute; left: 0; top: 0; width: 100%; border: none; }
-            .print-btn { display: none; }
+            .slip-action-btns { display: none; }
         }
     </style>
 </head>
@@ -183,7 +192,6 @@
     </center>
     <h2><strong>Antipolo City Health Office</strong></h2>
     <center><p><strong>Dr. Alvin L. Yalung</strong></p></center>
-    <center><p>(30 Patients) Appointments Monday & Wednesday</p></center>
     <center><p><strong>Hotline : ☎ 09165344707 / 8697-0362 / 8689-4518 / 8689-4097</strong></p></center>
     <center><p style="margin-bottom: 15px;"><strong>Effective September 2, 2026</strong></p></center>
 
@@ -274,8 +282,11 @@
         <div class="slip-row"><span class="slip-label">Patient Name:</span><span id="slipName">--</span></div>
         <div class="slip-row"><span class="slip-label">OPD Number:</span><span id="slipOpd">--</span></div>
         <div class="slip-row"><span class="slip-label">Doctor:</span><span>Dr. Alvin L. Yalung</span></div>
-        <p style="font-size:11px; color:#888; text-align:center; margin-top:15px;">Please screenshot and show this slip upon check-up.</p>
-        <button type="button" class="print-btn" onclick="window.print()">🖨 Print / Save as PDF</button>
+        <p style="font-size:11px; color:#888; text-align:center; margin-top:15px;">Please screenshot or save this slip as image upon check-up.</p>
+        <div class="slip-action-btns">
+            <button type="button" class="print-btn" onclick="window.print()">🖨 Print / Save as PDF</button>
+            <button type="button" class="image-btn" id="saveImageBtn" onclick="saveSlipAsImage()">🖼️ Save as Image</button>
+        </div>
     </div>
 
     <div class="footer">
@@ -556,6 +567,39 @@
             submitBtn.disabled = false;
             document.getElementById('reviewBtn').disabled = false;
             document.getElementById('reviewBtn').innerText = "Review & Submit";
+        });
+    }
+
+    // 8. Save Slip as Image Function (using html2canvas)
+    function saveSlipAsImage() {
+        const slip = document.getElementById('appointmentSlip');
+        const saveBtn = document.getElementById('saveImageBtn');
+        const refCode = document.getElementById('slipRef').innerText || 'slip';
+        
+        // Hide action buttons during capture
+        const actionBtns = slip.querySelector('.slip-action-btns');
+        if (actionBtns) actionBtns.style.display = 'none';
+
+        saveBtn.disabled = true;
+
+        html2canvas(slip, {
+            scale: 2, // High resolution output
+            backgroundColor: '#fafafa',
+            useCORS: true
+        }).then(canvas => {
+            // Restore action buttons
+            if (actionBtns) actionBtns.style.display = 'flex';
+            saveBtn.disabled = false;
+
+            // Trigger Download
+            const link = document.createElement('a');
+            link.download = `Appointment_Slip_${refCode}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }).catch(err => {
+            if (actionBtns) actionBtns.style.display = 'flex';
+            saveBtn.disabled = false;
+            alert("Nagkaroon ng problema sa pag-save ng image: " + err);
         });
     }
 </script>
