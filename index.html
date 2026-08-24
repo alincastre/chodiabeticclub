@@ -181,9 +181,206 @@
             #appointmentSlip { position: absolute; left: 0; top: 0; width: 100%; border: none; }
             .slip-action-btns { display: none; }
         }
+    
+
+        .admin-summary {
+            display:grid;
+            grid-template-columns:repeat(4, minmax(0,1fr));
+            gap:10px;
+            padding:0 15px 12px;
+        }
+        .summary-card {
+            background:#f7f9fa;
+            border:1px solid #e1e6e8;
+            border-radius:9px;
+            padding:12px;
+            text-align:center;
+        }
+        .summary-number {
+            font-size:24px;
+            font-weight:800;
+            color:#2c3e50;
+        }
+        .summary-label {
+            font-size:11px;
+            color:#6b7280;
+            margin-top:2px;
+            text-transform:uppercase;
+        }
+        .admin-tools .search-box {
+            flex:1 1 260px;
+            min-width:220px;
+        }
+        .admin-tools .date-box {
+            flex:0 1 170px;
+        }
+        .admin-tools .admin-action {
+            flex:0 0 auto;
+        }
+        .client-table tbody tr:nth-child(even) {
+            background:#fafafa;
+        }
+        .client-table tbody tr:hover {
+            background:#eef7ff;
+        }
+        .type-badge {
+            display:inline-block;
+            padding:3px 7px;
+            border-radius:12px;
+            font-size:11px;
+            font-weight:700;
+            background:#eaf2f8;
+            color:#2c3e50;
+        }
+        .admin-subtitle {
+            font-size:12px;
+            opacity:.8;
+            margin-top:3px;
+        }
+        @media (max-width:800px) {
+            .admin-summary { grid-template-columns:repeat(2, minmax(0,1fr)); }
+        }
+        @media (max-width:450px) {
+            .admin-summary { grid-template-columns:1fr 1fr; gap:7px; padding-left:10px; padding-right:10px; }
+            .summary-card { padding:9px 5px; }
+            .summary-number { font-size:20px; }
+            .summary-label { font-size:9px; }
+        }
+
+        /* ================= ADMIN BUTTON & DASHBOARD ================= */
+        #adminGearBtn {
+            position: fixed;
+            right: 18px;
+            top: 18px;
+            width: 44px;
+            height: 44px;
+            padding: 0;
+            border-radius: 50%;
+            background: #2c3e50;
+            color: #fff;
+            font-size: 20px;
+            z-index: 2000;
+            box-shadow: 0 3px 10px rgba(0,0,0,.25);
+        }
+        #adminGearBtn:hover { background:#1f2d3a; }
+
+        .admin-modal {
+            display:none;
+            position:fixed;
+            inset:0;
+            background:rgba(0,0,0,.65);
+            z-index:3000;
+            padding:15px;
+            box-sizing:border-box;
+            overflow:auto;
+        }
+        .admin-panel {
+            background:#fff;
+            width:100%;
+            max-width:1100px;
+            margin:30px auto;
+            border-radius:12px;
+            box-shadow:0 8px 30px rgba(0,0,0,.3);
+            overflow:hidden;
+        }
+        .admin-login {
+            max-width:400px;
+            margin:70px auto;
+            background:#fff;
+            padding:25px;
+            border-radius:12px;
+        }
+        .admin-head {
+            background:#2c3e50;
+            color:#fff;
+            padding:16px 20px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:10px;
+        }
+        .admin-head h3 { margin:0; }
+        .admin-close {
+            width:auto;
+            background:#e74c3c;
+            padding:7px 12px;
+            font-size:14px;
+        }
+        .admin-tools {
+            padding:15px;
+            display:flex;
+            gap:10px;
+            flex-wrap:wrap;
+            align-items:center;
+        }
+        .admin-tools input, .admin-tools select {
+            padding:9px;
+            border:1px solid #ccc;
+            border-radius:6px;
+            box-sizing:border-box;
+        }
+        .admin-action {
+            width:auto;
+            padding:9px 14px;
+            font-size:14px;
+        }
+        .admin-stats {
+            padding:0 15px 10px;
+            font-weight:bold;
+            color:#2c3e50;
+        }
+        .client-table-wrap {
+            overflow:auto;
+            padding:0 15px 20px;
+        }
+        .client-table {
+            width:100%;
+            min-width:900px;
+            border-collapse:collapse;
+            font-size:13px;
+        }
+        .client-table th, .client-table td {
+            border:1px solid #ddd;
+            padding:8px;
+            text-align:left;
+            vertical-align:top;
+        }
+        .client-table th {
+            background:#ecf0f1;
+            color:#2c3e50;
+            position:sticky;
+            top:0;
+        }
+        .admin-error {
+            color:#b71c1c;
+            background:#fdecea;
+            border:1px solid #f5c6cb;
+            padding:9px;
+            border-radius:6px;
+            margin-top:10px;
+            display:none;
+        }
+        .admin-success {
+            color:#155724;
+            background:#d4edda;
+            border:1px solid #c3e6cb;
+            padding:9px;
+            border-radius:6px;
+            margin-top:10px;
+            display:none;
+        }
+        @media (max-width:600px) {
+            #adminGearBtn { right:10px; top:10px; }
+            .admin-head { padding:12px; }
+            .admin-tools > * { width:100%; }
+            .admin-action { width:100%; }
+        }
+
     </style>
 </head>
 <body>
+<button id="adminGearBtn" type="button" onclick="openAdminLogin()" title="Admin Login">⚙️</button>
+
 
 <div class="form-container">
     <center>
@@ -291,6 +488,86 @@
 
     <div class="footer">
         Antipolo City Health Office Diabetic Club<br> Coded by: Erwin R. Alincastre. All Rights Reserved.
+    </div>
+</div>
+
+
+<!-- ================= ADMIN LOGIN ================= -->
+<div id="adminLoginModal" class="admin-modal">
+    <div class="admin-login">
+        <div class="modal-header">
+            <h3>🔐 Admin Login</h3>
+        </div>
+        <div class="form-group">
+            <label for="adminPassword">Admin Password</label>
+            <input type="password" id="adminPassword" placeholder="Enter admin password" autocomplete="current-password">
+        </div>
+        <button type="button" onclick="adminLogin()">Login</button>
+        <button type="button" class="btn-cancel" style="margin-top:10px;" onclick="closeAdminLogin()">Cancel</button>
+        <div id="adminLoginError" class="admin-error"></div>
+    </div>
+</div>
+
+<!-- ================= ADMIN DASHBOARD ================= -->
+<div id="adminDashboardModal" class="admin-modal">
+    <div class="admin-panel">
+        <div class="admin-head">
+            <div>
+                <h3>📊 Admin Dashboard</h3>
+                <div class="admin-subtitle">Client / Patient Registration List</div>
+            </div>
+            <button type="button" class="admin-close" onclick="logoutAdmin()">Logout</button>
+        </div>
+
+        <div class="admin-summary">
+            <div class="summary-card">
+                <div class="summary-number" id="summaryTotal">0</div>
+                <div class="summary-label">Total Clients</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-number" id="summaryToday">0</div>
+                <div class="summary-label">Today</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-number" id="summaryNew">0</div>
+                <div class="summary-label">New</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-number" id="summaryOld">0</div>
+                <div class="summary-label">Old</div>
+            </div>
+        </div>
+
+        <div class="admin-tools">
+            <input class="search-box" type="text" id="clientSearch" placeholder="🔎 Search name / OPD / contact">
+            <input class="date-box" type="date" id="clientDateFilter">
+            <button type="button" class="admin-action" onclick="loadClients()">🔄 Refresh</button>
+            <button type="button" class="admin-action" onclick="clearClientFilters()">Clear</button>
+            <button type="button" class="admin-action" onclick="changeAdminPassword()">🔑 Change Password</button>
+        </div>
+
+        <div id="adminMessage" class="admin-error"></div>
+        <div class="admin-stats" id="clientStats">Showing 0 of 0 client(s)</div>
+
+        <div class="client-table-wrap">
+            <table class="client-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>OPD</th>
+                        <th>Type</th>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>Address</th>
+                        <th>Contact</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody id="clientTableBody">
+                    <tr><td colspan="8" style="text-align:center;">No records loaded.</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
@@ -602,6 +879,201 @@
             alert("Nagkaroon ng problema sa pag-save ng image: " + err);
         });
     }
+
+// ================= ADMIN DASHBOARD =================
+let adminLoggedIn = false;
+let adminPasswordForSession = "";
+let allClients = [];
+
+function openAdminLogin() {
+    if (adminLoggedIn) {
+        document.getElementById('adminDashboardModal').style.display = 'block';
+        loadClients();
+        return;
+    }
+    document.getElementById('adminLoginError').style.display = 'none';
+    document.getElementById('adminPassword').value = '';
+    document.getElementById('adminLoginModal').style.display = 'block';
+    setTimeout(() => document.getElementById('adminPassword').focus(), 100);
+}
+
+function closeAdminLogin() {
+    document.getElementById('adminLoginModal').style.display = 'none';
+}
+
+function adminLogin() {
+    const password = document.getElementById('adminPassword').value.trim();
+    if (!password) {
+        showAdminLoginError("Please enter the admin password.");
+        return;
+    }
+
+    const err = document.getElementById('adminLoginError');
+    err.style.display = 'block';
+    err.style.background = '#fff3cd';
+    err.style.color = '#856404';
+    err.style.borderColor = '#ffeeba';
+    err.innerText = 'Checking admin access...';
+
+    fetch(`${scriptURL}?action=getClients&password=${encodeURIComponent(password)}`)
+        .then(r => r.json())
+        .then(data => {
+            if (data.result === 'success') {
+                adminLoggedIn = true;
+                adminPasswordForSession = password;
+                closeAdminLogin();
+                document.getElementById('adminDashboardModal').style.display = 'block';
+                allClients = data.clients || [];
+                renderClients();
+            } else {
+                showAdminLoginError(data.message || 'Invalid admin password.');
+            }
+        })
+        .catch(err => {
+            showAdminLoginError('Unable to connect to the admin server.');
+        });
+}
+
+function showAdminLoginError(msg) {
+    const el = document.getElementById('adminLoginError');
+    el.style.display = 'block';
+    el.style.background = '#fdecea';
+    el.style.color = '#b71c1c';
+    el.style.borderColor = '#f5c6cb';
+    el.innerText = msg;
+}
+
+function loadClients() {
+    if (!adminLoggedIn) return;
+    const stats = document.getElementById('clientStats');
+    stats.innerText = 'Loading clients...';
+
+    fetch(`${scriptURL}?action=getClients&password=${encodeURIComponent(adminPasswordForSession)}`)
+        .then(r => r.json())
+        .then(data => {
+            if (data.result !== 'success') {
+                logoutAdmin();
+                openAdminLogin();
+                return;
+            }
+            allClients = data.clients || [];
+            renderClients();
+        })
+        .catch(() => {
+            document.getElementById('adminMessage').style.display = 'block';
+            document.getElementById('adminMessage').innerText = 'Unable to load client records.';
+        });
+}
+
+function renderClients() {
+    const search = (document.getElementById('clientSearch').value || '').toLowerCase();
+    const date = document.getElementById('clientDateFilter').value || '';
+
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('summaryTotal').innerText = allClients.length;
+    document.getElementById('summaryToday').innerText =
+        allClients.filter(c => c.date === today).length;
+    document.getElementById('summaryNew').innerText =
+        allClients.filter(c => String(c.type).toUpperCase() === 'NEW').length;
+    document.getElementById('summaryOld').innerText =
+        allClients.filter(c => String(c.type).toUpperCase() === 'OLD').length;
+
+    const filtered = allClients.filter(c => {
+        const text = [c.name,c.opd,c.contact,c.type,c.address,c.age].join(' ').toLowerCase();
+        return (!search || text.includes(search)) && (!date || c.date === date);
+    });
+
+    const body = document.getElementById('clientTableBody');
+    document.getElementById('clientStats').innerText =
+        `Showing ${filtered.length} of ${allClients.length} client(s)`;
+
+    if (!filtered.length) {
+        body.innerHTML = '<tr><td colspan="8" style="text-align:center;">No matching records.</td></tr>';
+        return;
+    }
+
+    body.innerHTML = filtered.map(c => `
+        <tr>
+            <td>${escapeAdminHtml(c.date)}</td>
+            <td>${escapeAdminHtml(c.opd)}</td>
+            <td><span class="type-badge">${escapeAdminHtml(c.type)}</span></td>
+            <td><strong>${escapeAdminHtml(c.name)}</strong></td>
+            <td>${escapeAdminHtml(c.age)}</td>
+            <td>${escapeAdminHtml(c.address)}</td>
+            <td>${escapeAdminHtml(c.contact)}</td>
+            <td>${escapeAdminHtml(c.timestamp)}</td>
+        </tr>
+    `).join('');
+}
+
+function escapeAdminHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, m => ({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
+    }[m]));
+}
+
+function clearClientFilters() {
+    document.getElementById('clientSearch').value = '';
+    document.getElementById('clientDateFilter').value = '';
+    renderClients();
+}
+
+function logoutAdmin() {
+    adminLoggedIn = false;
+    adminPasswordForSession = "";
+    allClients = [];
+    document.getElementById('clientSearch').value = '';
+    document.getElementById('clientDateFilter').value = '';
+    document.getElementById('summaryTotal').innerText = '0';
+    document.getElementById('summaryToday').innerText = '0';
+    document.getElementById('summaryNew').innerText = '0';
+    document.getElementById('summaryOld').innerText = '0';
+    document.getElementById('adminDashboardModal').style.display = 'none';
+}
+
+function changeAdminPassword() {
+    const currentPassword = prompt("Enter current admin password:");
+    if (currentPassword === null) return;
+
+    const newPassword = prompt("Enter new admin password (minimum 6 characters):");
+    if (newPassword === null) return;
+
+    const confirmPassword = prompt("Re-enter the new admin password:");
+    if (confirmPassword === null) return;
+
+    if (newPassword !== confirmPassword) {
+        alert("New passwords do not match.");
+        return;
+    }
+
+    if (newPassword.length < 6) {
+        alert("New password must be at least 6 characters.");
+        return;
+    }
+
+    fetch(scriptURL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body:
+            'action=changeAdminPassword' +
+            '&currentPassword=' + encodeURIComponent(currentPassword) +
+            '&newPassword=' + encodeURIComponent(newPassword)
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.result === 'success') {
+            alert("Password changed successfully. Please log in again using the new password.");
+            logoutAdmin();
+        } else {
+            alert(data.message || "Unable to change password.");
+        }
+    })
+    .catch(() => alert("Unable to connect to the admin server."));
+}
+
+document.getElementById('clientSearch').addEventListener('input', renderClients);
+document.getElementById('clientDateFilter').addEventListener('change', renderClients);
+
 </script>
 <script>
 // 1. Disable Right-Click
