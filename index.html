@@ -182,71 +182,11 @@
             .slip-action-btns { display: none; }
         }
     
-
-        .admin-summary {
-            display:grid;
-            grid-template-columns:repeat(4, minmax(0,1fr));
-            gap:10px;
-            padding:0 15px 12px;
-        }
-        .summary-card {
-            background:#f7f9fa;
-            border:1px solid #e1e6e8;
-            border-radius:9px;
-            padding:12px;
-            text-align:center;
-        }
-        .summary-number {
-            font-size:24px;
-            font-weight:800;
-            color:#2c3e50;
-        }
-        .summary-label {
-            font-size:11px;
-            color:#6b7280;
-            margin-top:2px;
-            text-transform:uppercase;
-        }
-        .admin-tools .search-box {
-            flex:1 1 260px;
-            min-width:220px;
-        }
-        .admin-tools .date-box {
-            flex:0 1 170px;
-        }
-        .admin-tools .admin-action {
-            flex:0 0 auto;
-        }
-        .client-table tbody tr:nth-child(even) {
-            background:#fafafa;
-        }
-        .client-table tbody tr:hover {
-            background:#eef7ff;
-        }
-        .type-badge {
-            display:inline-block;
-            padding:3px 7px;
-            border-radius:12px;
-            font-size:11px;
-            font-weight:700;
-            background:#eaf2f8;
-            color:#2c3e50;
-        }
-        .admin-subtitle {
-            font-size:12px;
-            opacity:.8;
-            margin-top:3px;
-        }
-        @media (max-width:800px) {
-            .admin-summary { grid-template-columns:repeat(2, minmax(0,1fr)); }
-        }
-        @media (max-width:450px) {
-            .admin-summary { grid-template-columns:1fr 1fr; gap:7px; padding-left:10px; padding-right:10px; }
-            .summary-card { padding:9px 5px; }
-            .summary-number { font-size:20px; }
-            .summary-label { font-size:9px; }
-        }
-
+        .admin-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;padding:0 15px 12px}
+        .summary-card{background:#f7f9fa;border:1px solid #e1e6e8;border-radius:9px;padding:12px;text-align:center}
+        .summary-number{font-size:24px;font-weight:800;color:#2c3e50}
+        .summary-label{font-size:11px;color:#6b7280;margin-top:2px;text-transform:uppercase}
+        @media(max-width:800px){.admin-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
         /* ================= ADMIN BUTTON & DASHBOARD ================= */
         #adminGearBtn {
             position: fixed;
@@ -335,7 +275,7 @@
         }
         .client-table {
             width:100%;
-            min-width:900px;
+            min-width:1050px;
             border-collapse:collapse;
             font-size:13px;
         }
@@ -376,12 +316,350 @@
             .admin-action { width:100%; }
         }
 
+    
+        /* ULTRA COMPACT ADMIN ACTION BUTTONS */
+        .client-actions {
+            display:flex !important;
+            gap:2px !important;
+            min-width:62px !important;
+            width:62px !important;
+            justify-content:center !important;
+            align-items:center !important;
+        }
+        .client-actions button {
+            box-sizing:border-box !important;
+            width:28px !important;
+            min-width:28px !important;
+            max-width:28px !important;
+            height:24px !important;
+            min-height:24px !important;
+            max-height:24px !important;
+            padding:0 !important;
+            margin:0 !important;
+            border:0 !important;
+            border-radius:4px !important;
+            font-size:12px !important;
+            line-height:24px !important;
+        }
+        .client-table {
+            min-width:950px !important;
+        }
+        /* Better confirmation / notification cards */
+        .professional-toast {
+            position:fixed;
+            top:18px;
+            left:50%;
+            transform:translateX(-50%) translateY(-20px);
+            opacity:0;
+            pointer-events:none;
+            z-index:5000;
+            background:#fff;
+            border:1px solid #dfe5e8;
+            border-radius:10px;
+            box-shadow:0 8px 25px rgba(0,0,0,.16);
+            padding:12px 16px;
+            min-width:260px;
+            max-width:calc(100vw - 30px);
+            text-align:center;
+            transition:.2s ease;
+            font-size:14px;
+        }
+        .professional-toast.show {
+            opacity:1;
+            transform:translateX(-50%) translateY(0);
+        }
+        .professional-toast.success { border-left:4px solid #27ae60; }
+        .professional-toast.error { border-left:4px solid #e74c3c; }
+
+        /* Patient details modal */
+        .patient-details-grid {
+            display:grid;
+            grid-template-columns:repeat(2,minmax(0,1fr));
+            gap:10px;
+            text-align:left;
+        }
+        .patient-detail-item {
+            border:1px solid #e5e7eb;
+            border-radius:7px;
+            padding:9px;
+            background:#fafafa;
+        }
+        .patient-detail-label {
+            font-size:10px;
+            color:#6b7280;
+            text-transform:uppercase;
+            font-weight:700;
+            margin-bottom:3px;
+        }
+        .patient-detail-value {
+            font-size:14px;
+            color:#263238;
+            word-break:break-word;
+        }
+        .view-client-btn {
+            background:#8e44ad !important;
+        }
+        @media(max-width:600px) {
+            .clinic-brand { padding:9px 5px; }
+            .clinic-logo { width:40px;height:40px;flex-basis:40px;font-size:20px; }
+            .clinic-brand-title { font-size:16px; }
+            .patient-details-grid { grid-template-columns:1fr; }
+        }
+
+    
+        .client-actions {
+            display:flex !important;
+            gap:2px !important;
+            min-width:96px !important;
+            width:96px !important;
+            justify-content:center !important;
+            align-items:center !important;
+        }
+        .client-actions button {
+            width:28px !important;
+            min-width:28px !important;
+            max-width:28px !important;
+            height:24px !important;
+            min-height:24px !important;
+            padding:0 !important;
+            font-size:12px !important;
+            line-height:24px !important;
+        }
+
+    
+        /* POLISHED ADMIN LOGIN */
+        .admin-login {
+            position:relative;
+            overflow:hidden;
+            border-radius:16px !important;
+            border:1px solid #e4e9ed !important;
+            box-shadow:0 18px 45px rgba(31,50,70,.18) !important;
+        }
+        .admin-login::before {
+            content:"";
+            position:absolute;
+            top:0;
+            left:0;
+            right:0;
+            height:5px;
+            background:#2c3e50;
+        }
+        .admin-login .modal-header {
+            padding-top:22px;
+            text-align:center;
+        }
+        .admin-login-icon {
+            width:58px;
+            height:58px;
+            margin:0 auto 10px;
+            border-radius:50%;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            background:#eef3f7;
+            font-size:27px;
+        }
+        .admin-login-title {
+            font-size:20px;
+            font-weight:800;
+            color:#263746;
+            margin:0;
+        }
+        .admin-login-subtitle {
+            color:#7a8792;
+            font-size:12px;
+            margin-top:4px;
+        }
+        .admin-password-wrap {
+            position:relative;
+            margin:15px 0 12px;
+        }
+        .admin-password-wrap input {
+            padding-right:46px !important;
+            box-sizing:border-box;
+            height:44px !important;
+        }
+        .admin-password-toggle {
+            position:absolute !important;
+            right:5px;
+            top:5px;
+            width:34px !important;
+            height:34px !important;
+            min-width:34px !important;
+            padding:0 !important;
+            margin:0 !important;
+            border-radius:7px !important;
+            background:transparent !important;
+            color:#65727d !important;
+            box-shadow:none !important;
+            font-size:16px !important;
+        }
+        .admin-login-submit {
+            height:44px !important;
+            border-radius:9px !important;
+            font-weight:700 !important;
+            letter-spacing:.1px;
+        }
+        .admin-login-note {
+            text-align:center;
+            color:#8a949d;
+            font-size:10px;
+            margin-top:10px;
+        }
+        @media(max-width:480px) {
+            .admin-login {
+                width:calc(100% - 24px) !important;
+                margin:12px auto !important;
+            }
+        }
+
+    
+        /* PREMIUM ADMIN LOGIN - VISUAL ONLY */
+        .admin-login {
+            width: min(390px, calc(100vw - 28px)) !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+            border: 1px solid #e3e8ec !important;
+            border-radius: 18px !important;
+            background: #ffffff !important;
+            box-shadow: 0 24px 65px rgba(20,35,50,.22) !important;
+        }
+        .admin-login::before {
+            display:none !important;
+        }
+        .admin-login-hero {
+            padding: 28px 24px 24px;
+            background: linear-gradient(145deg,#203a63,#2d527f);
+            color:#fff;
+            text-align:center;
+        }
+        .admin-login-shield {
+            width:64px;
+            height:64px;
+            margin:0 auto 12px;
+            border-radius:18px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            background:rgba(255,255,255,.14);
+            border:1px solid rgba(255,255,255,.22);
+            box-shadow:0 8px 22px rgba(0,0,0,.12);
+            font-size:30px;
+        }
+        .admin-login-hero h3 {
+            margin:0 !important;
+            color:#fff !important;
+            font-size:21px !important;
+            font-weight:800 !important;
+            letter-spacing:.1px;
+        }
+        .admin-login-hero p {
+            margin:6px 0 0;
+            color:rgba(255,255,255,.82);
+            font-size:12px;
+        }
+        .admin-login-body {
+            padding:22px 24px 20px;
+        }
+        .admin-login-label {
+            display:block;
+            margin:0 0 7px;
+            color:#34495e;
+            font-size:12px;
+            font-weight:700;
+        }
+        .admin-password-wrap {
+            margin:0 0 14px !important;
+        }
+        .admin-password-wrap::before {
+            content:"🔑";
+            position:absolute;
+            left:13px;
+            top:50%;
+            transform:translateY(-50%);
+            z-index:2;
+            font-size:14px;
+            pointer-events:none;
+        }
+        .admin-password-wrap input {
+            height:46px !important;
+            padding-left:40px !important;
+            padding-right:48px !important;
+            border:1px solid #d6dde3 !important;
+            border-radius:10px !important;
+            background:#fbfcfd !important;
+            outline:none;
+            transition:.18s ease;
+        }
+        .admin-password-wrap input:focus {
+            border-color:#2d527f !important;
+            background:#fff !important;
+            box-shadow:0 0 0 3px rgba(45,82,127,.10) !important;
+        }
+        .admin-password-toggle {
+            right:6px !important;
+            top:6px !important;
+            width:34px !important;
+            height:34px !important;
+            min-width:34px !important;
+            border-radius:8px !important;
+        }
+        .admin-login-submit {
+            width:100% !important;
+            height:46px !important;
+            margin:0 !important;
+            border:0 !important;
+            border-radius:10px !important;
+            background:#203a63 !important;
+            color:#fff !important;
+            font-size:14px !important;
+            font-weight:800 !important;
+            box-shadow:0 6px 15px rgba(32,58,99,.20) !important;
+            transition:.18s ease;
+        }
+        .admin-login-submit:hover {
+            transform:translateY(-1px);
+            box-shadow:0 8px 18px rgba(32,58,99,.26) !important;
+        }
+        .admin-login-cancel {
+            width:100% !important;
+            height:40px !important;
+            margin-top:9px !important;
+            border:1px solid #e1e6ea !important;
+            border-radius:9px !important;
+            background:#fff !important;
+            color:#66737d !important;
+            font-weight:700 !important;
+        }
+        .admin-login-footer {
+            margin-top:15px;
+            padding-top:12px;
+            border-top:1px solid #edf0f2;
+            text-align:center;
+            color:#98a1a8;
+            font-size:10px;
+        }
+        .admin-login-footer span {
+            display:inline-flex;
+            align-items:center;
+            gap:4px;
+        }
+        @media(max-width:480px) {
+            .admin-login {
+                width:calc(100vw - 22px) !important;
+            }
+            .admin-login-body {
+                padding:20px 18px 18px;
+            }
+            .admin-login-hero {
+                padding:24px 18px 21px;
+            }
+        }
+
     </style>
 </head>
 <body>
 <button id="adminGearBtn" type="button" onclick="openAdminLogin()" title="Admin Login">⚙️</button>
-
-
 <div class="form-container">
     <center>
         <img src="https://www.image2url.com/r2/default/images/1782022944770-7a8e4b4c-a5a6-4f1b-b164-aa1d514db85e.png" alt="Company Logo" width="50"> 
@@ -495,16 +773,40 @@
 <!-- ================= ADMIN LOGIN ================= -->
 <div id="adminLoginModal" class="admin-modal">
     <div class="admin-login">
-        <div class="modal-header">
-            <h3>🔐 Admin Login</h3>
+        <div class="admin-login-hero">
+            <div class="admin-login-shield">🔐</div>
+            <h3>Administrator Access</h3>
+            <p>Secure access to the patient dashboard</p>
         </div>
-        <div class="form-group">
-            <label for="adminPassword">Admin Password</label>
-            <input type="password" id="adminPassword" placeholder="Enter admin password" autocomplete="current-password">
+
+        <div class="admin-login-body">
+            <label class="admin-login-label" for="adminPassword">Admin Password</label>
+
+            <div class="admin-password-wrap">
+                <input type="password"
+                       id="adminPassword"
+                       placeholder="Enter your password"
+                       autocomplete="current-password">
+                <button type="button"
+                        class="admin-password-toggle"
+                        onclick="toggleAdminPassword()"
+                        title="Show password">👁️</button>
+            </div>
+
+            <button type="button"
+                    class="admin-login-submit"
+                    onclick="adminLogin()">🔓 Sign in to Dashboard</button>
+
+            <button type="button"
+                    class="admin-login-cancel"
+                    onclick="closeAdminLogin()">Cancel</button>
+
+            <div id="adminLoginError" class="admin-error"></div>
+
+            <div class="admin-login-footer">
+                <span>🛡️ Authorized administrator access</span>
+            </div>
         </div>
-        <button type="button" onclick="adminLogin()">Login</button>
-        <button type="button" class="btn-cancel" style="margin-top:10px;" onclick="closeAdminLogin()">Cancel</button>
-        <div id="adminLoginError" class="admin-error"></div>
     </div>
 </div>
 
@@ -512,10 +814,7 @@
 <div id="adminDashboardModal" class="admin-modal">
     <div class="admin-panel">
         <div class="admin-head">
-            <div>
-                <h3>📊 Admin Dashboard</h3>
-                <div class="admin-subtitle">Client / Patient Registration List</div>
-            </div>
+            <h3>📊 Admin Dashboard — Client List</h3>
             <button type="button" class="admin-close" onclick="logoutAdmin()">Logout</button>
         </div>
 
@@ -539,15 +838,15 @@
         </div>
 
         <div class="admin-tools">
-            <input class="search-box" type="text" id="clientSearch" placeholder="🔎 Search name / OPD / contact">
-            <input class="date-box" type="date" id="clientDateFilter">
+            <input type="text" id="clientSearch" placeholder="🔎 Search name / OPD / contact">
+            <input type="date" id="clientDateFilter">
             <button type="button" class="admin-action" onclick="loadClients()">🔄 Refresh</button>
             <button type="button" class="admin-action" onclick="clearClientFilters()">Clear</button>
             <button type="button" class="admin-action" onclick="changeAdminPassword()">🔑 Change Password</button>
         </div>
 
         <div id="adminMessage" class="admin-error"></div>
-        <div class="admin-stats" id="clientStats">Showing 0 of 0 client(s)</div>
+        <div class="admin-stats" id="clientStats">Clients: 0</div>
 
         <div class="client-table-wrap">
             <table class="client-table">
@@ -561,13 +860,29 @@
                         <th>Address</th>
                         <th>Contact</th>
                         <th>Timestamp</th>
+                        <th style="width:96px;text-align:center;">⚙️</th>
                     </tr>
                 </thead>
                 <tbody id="clientTableBody">
-                    <tr><td colspan="8" style="text-align:center;">No records loaded.</td></tr>
+                    <tr><td colspan="9" style="text-align:center;">No records loaded.</td></tr>
                 </tbody>
             </table>
         </div>
+    </div>
+</div>
+
+
+<!-- PROFESSIONAL TOAST -->
+<div id="professionalToast" class="professional-toast"></div>
+
+<!-- PATIENT DETAILS MODAL -->
+<div id="patientDetailsModal" class="admin-modal">
+    <div class="admin-login" style="max-width:560px;">
+        <div class="modal-header">
+            <h3>👤 Patient Details</h3>
+        </div>
+        <div id="patientDetailsContent" class="patient-details-grid"></div>
+        <button type="button" onclick="closePatientDetails()">Close</button>
     </div>
 </div>
 
@@ -970,13 +1285,14 @@ function renderClients() {
     const date = document.getElementById('clientDateFilter').value || '';
 
     const today = new Date().toISOString().split('T')[0];
-    document.getElementById('summaryTotal').innerText = allClients.length;
-    document.getElementById('summaryToday').innerText =
-        allClients.filter(c => c.date === today).length;
-    document.getElementById('summaryNew').innerText =
-        allClients.filter(c => String(c.type).toUpperCase() === 'NEW').length;
-    document.getElementById('summaryOld').innerText =
-        allClients.filter(c => String(c.type).toUpperCase() === 'OLD').length;
+    const sTotal = document.getElementById('summaryTotal');
+    const sToday = document.getElementById('summaryToday');
+    const sNew = document.getElementById('summaryNew');
+    const sOld = document.getElementById('summaryOld');
+    if (sTotal) sTotal.innerText = allClients.length;
+    if (sToday) sToday.innerText = allClients.filter(c => c.date === today).length;
+    if (sNew) sNew.innerText = allClients.filter(c => String(c.type).toUpperCase() === 'NEW').length;
+    if (sOld) sOld.innerText = allClients.filter(c => String(c.type).toUpperCase() === 'OLD').length;
 
     const filtered = allClients.filter(c => {
         const text = [c.name,c.opd,c.contact,c.type,c.address,c.age].join(' ').toLowerCase();
@@ -988,12 +1304,12 @@ function renderClients() {
         `Showing ${filtered.length} of ${allClients.length} client(s)`;
 
     if (!filtered.length) {
-        body.innerHTML = '<tr><td colspan="8" style="text-align:center;">No matching records.</td></tr>';
+        body.innerHTML = '<tr><td colspan="9" style="text-align:center;">No matching records.</td></tr>';
         return;
     }
 
     body.innerHTML = filtered.map(c => `
-        <tr>
+        <tr id="client-row-${c.row}">
             <td>${escapeAdminHtml(c.date)}</td>
             <td>${escapeAdminHtml(c.opd)}</td>
             <td><span class="type-badge">${escapeAdminHtml(c.type)}</span></td>
@@ -1002,8 +1318,151 @@ function renderClients() {
             <td>${escapeAdminHtml(c.address)}</td>
             <td>${escapeAdminHtml(c.contact)}</td>
             <td>${escapeAdminHtml(c.timestamp)}</td>
+            <td>
+                <div class="client-actions">
+                    <button type="button" class="view-client-btn" onclick="viewClient(${c.row})" title="View">👁️</button>
+                    <button type="button" class="edit-client-btn" onclick="editClient(${c.row})" title="Edit">✏️</button>
+                    <button type="button" class="delete-client-btn" onclick="deleteClient(${c.row})" title="Delete">🗑️</button>
+                </div>
+            </td>
         </tr>
     `).join('');
+}
+
+function editClient(rowNumber) {
+    const client = allClients.find(c => Number(c.row) === Number(rowNumber));
+    if (!client) return;
+
+    const row = document.getElementById(`client-row-${rowNumber}`);
+    row.innerHTML = `
+        <td><input class="edit-row-input" type="date" id="edit-date-${rowNumber}" value="${escapeAdminHtml(client.date)}"></td>
+        <td><input class="edit-row-input" type="text" id="edit-opd-${rowNumber}" value="${escapeAdminHtml(client.opd)}"></td>
+        <td><input class="edit-row-input" type="text" id="edit-type-${rowNumber}" value="${escapeAdminHtml(client.type)}"></td>
+        <td><input class="edit-row-input" type="text" id="edit-name-${rowNumber}" value="${escapeAdminHtml(client.name)}"></td>
+        <td><input class="edit-row-input" type="number" id="edit-age-${rowNumber}" value="${escapeAdminHtml(client.age)}"></td>
+        <td><input class="edit-row-input" type="text" id="edit-address-${rowNumber}" value="${escapeAdminHtml(client.address)}"></td>
+        <td><input class="edit-row-input" type="text" id="edit-contact-${rowNumber}" value="${escapeAdminHtml(client.contact)}"></td>
+        <td>${escapeAdminHtml(client.timestamp)}</td>
+        <td>
+            <div class="client-actions">
+                <button type="button" class="save-client-btn" onclick="saveClient(${rowNumber})" title="Save">💾</button>
+                <button type="button" class="cancel-client-btn" onclick="renderClients()" title="Cancel">✖️</button>
+            </div>
+        </td>
+    `;
+}
+
+function saveClient(rowNumber) {
+    const params = new URLSearchParams({
+        action: 'updateClient',
+        password: adminPasswordForSession,
+        row: rowNumber,
+        date: document.getElementById(`edit-date-${rowNumber}`).value,
+        opd: document.getElementById(`edit-opd-${rowNumber}`).value,
+        type: document.getElementById(`edit-type-${rowNumber}`).value,
+        name: document.getElementById(`edit-name-${rowNumber}`).value,
+        age: document.getElementById(`edit-age-${rowNumber}`).value,
+        address: document.getElementById(`edit-address-${rowNumber}`).value,
+        contact: document.getElementById(`edit-contact-${rowNumber}`).value
+    });
+
+    if (!params.get('date') || !params.get('name')) {
+        alert('Date and patient name are required.');
+        return;
+    }
+
+    fetch(`${scriptURL}?${params.toString()}`)
+        .then(r => r.json())
+        .then(data => {
+            if (data.result === 'success') {
+                showProfessionalToast('Client record saved.');
+                loadClients();
+            } else {
+                alert(data.message || 'Unable to save client.');
+            }
+        })
+        .catch(() => alert('Unable to connect to the admin server.'));
+}
+
+function deleteClient(rowNumber) {
+    const client = allClients.find(c => Number(c.row) === Number(rowNumber));
+    if (!client) return;
+
+    const ok = confirm(
+        `Delete this patient record?\n\n${client.name}\nOPD: ${client.opd}\nDate: ${client.date}\n\nThis cannot be undone.`
+    );
+    if (!ok) return;
+
+    const params = new URLSearchParams({
+        action: 'deleteClient',
+        password: adminPasswordForSession,
+        row: rowNumber
+    });
+
+    fetch(`${scriptURL}?${params.toString()}`)
+        .then(r => r.json())
+        .then(data => {
+            if (data.result === 'success') {
+                showProfessionalToast('Client record deleted.');
+                loadClients();
+            } else {
+                alert(data.message || 'Unable to delete client.');
+            }
+        })
+        .catch(() => alert('Unable to connect to the admin server.'));
+}
+
+function showProfessionalToast(message, type='success') {
+    const toast = document.getElementById('professionalToast');
+    if (!toast) return;
+    toast.className = 'professional-toast ' + type + ' show';
+    toast.innerText = message;
+    clearTimeout(window.__toastTimer);
+    window.__toastTimer = setTimeout(() => {
+        toast.classList.remove('show');
+    }, 2400);
+}
+
+function viewClient(rowNumber) {
+    const client = allClients.find(c => Number(c.row) === Number(rowNumber));
+    if (!client) return;
+
+    const content = document.getElementById('patientDetailsContent');
+    content.innerHTML = `
+        <div class="patient-detail-item"><div class="patient-detail-label">Date</div><div class="patient-detail-value">${escapeAdminHtml(client.date)}</div></div>
+        <div class="patient-detail-item"><div class="patient-detail-label">OPD</div><div class="patient-detail-value">${escapeAdminHtml(client.opd)}</div></div>
+        <div class="patient-detail-item"><div class="patient-detail-label">Type</div><div class="patient-detail-value">${escapeAdminHtml(client.type)}</div></div>
+        <div class="patient-detail-item"><div class="patient-detail-label">Name</div><div class="patient-detail-value">${escapeAdminHtml(client.name)}</div></div>
+        <div class="patient-detail-item"><div class="patient-detail-label">Age</div><div class="patient-detail-value">${escapeAdminHtml(client.age)}</div></div>
+        <div class="patient-detail-item"><div class="patient-detail-label">Contact</div><div class="patient-detail-value">${escapeAdminHtml(client.contact)}</div></div>
+        <div class="patient-detail-item" style="grid-column:1/-1;"><div class="patient-detail-label">Address</div><div class="patient-detail-value">${escapeAdminHtml(client.address)}</div></div>
+        <div class="patient-detail-item" style="grid-column:1/-1;"><div class="patient-detail-label">Registered Timestamp</div><div class="patient-detail-value">${escapeAdminHtml(client.timestamp)}</div></div>
+    `;
+    document.getElementById('patientDetailsModal').style.display = 'block';
+}
+
+function closePatientDetails() {
+    document.getElementById('patientDetailsModal').style.display = 'none';
+}
+
+function toggleAdminPassword() {
+    const input = document.querySelector('#adminLoginModal input[type="password"], #adminLoginModal input[type="text"]');
+    const button = document.querySelector('#adminLoginModal .admin-password-toggle');
+    if (!input) return;
+
+    if (input.type === 'password') {
+        input.type = 'text';
+        if (button) {
+            button.innerText = '🙈';
+            button.title = 'Hide password';
+        }
+    } else {
+        input.type = 'password';
+        if (button) {
+            button.innerText = '👁️';
+            button.title = 'Show password';
+        }
+    }
 }
 
 function escapeAdminHtml(value) {
@@ -1022,12 +1481,6 @@ function logoutAdmin() {
     adminLoggedIn = false;
     adminPasswordForSession = "";
     allClients = [];
-    document.getElementById('clientSearch').value = '';
-    document.getElementById('clientDateFilter').value = '';
-    document.getElementById('summaryTotal').innerText = '0';
-    document.getElementById('summaryToday').innerText = '0';
-    document.getElementById('summaryNew').innerText = '0';
-    document.getElementById('summaryOld').innerText = '0';
     document.getElementById('adminDashboardModal').style.display = 'none';
 }
 
