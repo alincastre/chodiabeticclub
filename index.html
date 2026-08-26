@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dr. Yalung Appointment System</title>
     <!-- html2canvas library for converting HTML element to Image -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
+
+
+</script>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -656,7 +659,272 @@
             }
         }
 
-    </style>
+    
+/* ================= ANNOUNCEMENT MODULE ================= */
+.announcement-admin-card{
+    margin:0 15px 15px;
+    padding:15px;
+    border:1px solid #e1e6ea;
+    border-radius:10px;
+    background:#fbfcfd;
+}
+.announcement-admin-card h4{margin:0 0 5px;color:#2c3e50;font-size:15px}
+.announcement-admin-card p{margin:0 0 10px;color:#7a8792;font-size:11px}
+.announcement-admin-row{display:flex;gap:8px;align-items:flex-start}
+#announcementAdminText{
+    flex:1;min-height:70px;resize:vertical;box-sizing:border-box;
+    padding:10px;border:1px solid #d6dde3;border-radius:7px;
+    font:14px 'Segoe UI',Tahoma,sans-serif;
+}
+.announcement-admin-buttons{display:flex;gap:7px;margin-top:8px}
+.announcement-admin-buttons button{width:auto;padding:8px 12px;font-size:12px}
+.announcement-save{background:#203a63!important}
+.announcement-clear{background:#e74c3c!important}
+.announcement-popup-overlay{
+    display:none;position:fixed;inset:0;background:rgba(0,0,0,.58);
+    z-index:7000;align-items:center;justify-content:center;padding:15px;box-sizing:border-box;
+}
+.announcement-popup{
+    width:100%;max-width:420px;background:#fff;border-radius:14px;overflow:hidden;
+    box-shadow:0 15px 45px rgba(0,0,0,.28);animation:announcementPop .22s ease;
+}
+.announcement-popup-head{
+    background:linear-gradient(135deg,#203a63,#2d527f);color:#fff;
+    padding:18px;text-align:center;
+}
+.announcement-popup-icon{font-size:30px}
+.announcement-popup-head h3{margin:5px 0 0;color:#fff}
+.announcement-popup-body{padding:20px;text-align:center}
+#announcementPopupText{white-space:pre-line;color:#34495e;line-height:1.55;font-size:14px;margin:0}
+.announcement-popup-ok{margin-top:18px!important;background:#203a63!important}
+@keyframes announcementPop{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+@media(max-width:600px){
+ .announcement-admin-row{display:block}
+ #announcementAdminText{width:100%}
+ .announcement-admin-buttons button{flex:1}
+}
+
+</style>
+<script>
+// ================= PATIENT ANNOUNCEMENT =================
+const ANNOUNCEMENT_STORAGE_KEY = 'acho_patient_announcement_v1';
+
+function getAnnouncementData(){
+    try { return JSON.parse(localStorage.getItem(ANNOUNCEMENT_STORAGE_KEY) || 'null'); }
+    catch(e){ return null; }
+}
+function saveAnnouncement(){
+    const field=document.getElementById('announcementAdminText');
+    const status=document.getElementById('announcementAdminStatus');
+    const text=(field ? field.value : '').trim();
+    if(!text){
+        if(status) status.innerText='Please enter an announcement first.';
+        return;
+    }
+    const data={text:text,version:Date.now()};
+    localStorage.setItem(ANNOUNCEMENT_STORAGE_KEY,JSON.stringify(data));
+    if(status){
+        status.style.color='#155724';
+        status.innerText='✅ Announcement published successfully.';
+    }
+    showAnnouncementPopup(text);
+}
+function clearAnnouncement(){
+    localStorage.removeItem(ANNOUNCEMENT_STORAGE_KEY);
+    const field=document.getElementById('announcementAdminText');
+    const status=document.getElementById('announcementAdminStatus');
+    if(field) field.value='';
+    if(status){
+        status.style.color='#6b7280';
+        status.innerText='Announcement cleared from this browser.';
+    }
+    closeAnnouncementPopup();
+}
+function showAnnouncementPopup(text){
+    const overlay=document.getElementById('announcementPopupOverlay');
+    const target=document.getElementById('announcementPopupText');
+    if(!overlay||!target)return;
+    target.innerText=text;
+    overlay.style.display='flex';
+}
+function closeAnnouncementPopup(){
+    const overlay=document.getElementById('announcementPopupOverlay');
+    if(overlay) overlay.style.display='none';
+}
+function loadAnnouncementAdmin(){
+    const data=getAnnouncementData();
+    const field=document.getElementById('announcementAdminText');
+    const status=document.getElementById('announcementAdminStatus');
+    if(data && field){
+        field.value=data.text || '';
+        if(status) status.innerText='Current announcement is saved on this browser.';
+    }
+}
+function checkPatientAnnouncement(){
+    const data=getAnnouncementData();
+    if(!data || !data.text)return;
+    const seen=sessionStorage.getItem('acho_seen_announcement_version');
+    if(String(seen)!==String(data.version)){
+        sessionStorage.setItem('acho_seen_announcement_version',String(data.version));
+        showAnnouncementPopup(data.text);
+    }
+}
+document.addEventListener('DOMContentLoaded',function(){
+    loadAnnouncementAdmin();
+    checkPatientAnnouncement();
+});
+</script>
+
+<script>
+(function(){
+    const ANNOUNCEMENT_STORAGE_KEY = 'acho_patient_announcement_v2';
+
+    function getAnnouncementData(){
+        try { return JSON.parse(localStorage.getItem(ANNOUNCEMENT_STORAGE_KEY) || 'null'); }
+        catch(e){ return null; }
+    }
+
+    window.saveAnnouncement = function(){
+        const field = document.getElementById('announcementAdminText');
+        const status = document.getElementById('announcementAdminStatus');
+        const text = (field ? field.value : '').trim();
+
+        if(!text){
+            if(status){
+                status.style.color = '#b71c1c';
+                status.innerText = 'Please enter an announcement first.';
+            }
+            return;
+        }
+
+        const data = { text:text, version:String(Date.now()) };
+        localStorage.setItem(ANNOUNCEMENT_STORAGE_KEY, JSON.stringify(data));
+
+        if(status){
+            status.style.color = '#155724';
+            status.innerText = '✅ Announcement published successfully.';
+        }
+
+        window.showAnnouncementPopup(text);
+    };
+
+    window.clearAnnouncement = function(){
+        localStorage.removeItem(ANNOUNCEMENT_STORAGE_KEY);
+        localStorage.removeItem('acho_seen_announcement_version_v2');
+
+        const field = document.getElementById('announcementAdminText');
+        const status = document.getElementById('announcementAdminStatus');
+
+        if(field) field.value = '';
+        if(status){
+            status.style.color = '#6b7280';
+            status.innerText = 'Announcement cleared from this browser.';
+        }
+
+        window.closeAnnouncementPopup();
+    };
+
+    window.showAnnouncementPopup = function(text){
+        const overlay = document.getElementById('announcementPopupOverlay');
+        const target = document.getElementById('announcementPopupText');
+        if(!overlay || !target) return;
+
+        target.textContent = text;
+        overlay.style.display = 'flex';
+    };
+
+    window.closeAnnouncementPopup = function(){
+        const overlay = document.getElementById('announcementPopupOverlay');
+        if(overlay) overlay.style.display = 'none';
+    };
+
+    function loadAnnouncementAdmin(){
+        const data = getAnnouncementData();
+        const field = document.getElementById('announcementAdminText');
+        const status = document.getElementById('announcementAdminStatus');
+
+        if(data && field){
+            field.value = data.text || '';
+            if(status) status.innerText = 'Current announcement is saved on this browser.';
+        }
+    }
+
+    function checkPatientAnnouncement(){
+        const data = getAnnouncementData();
+        if(!data || !data.text) return;
+
+        const seen = sessionStorage.getItem('acho_seen_announcement_version_v2');
+        if(String(seen) !== String(data.version)){
+            sessionStorage.setItem('acho_seen_announcement_version_v2', String(data.version));
+            window.showAnnouncementPopup(data.text);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function(){
+        loadAnnouncementAdmin();
+        checkPatientAnnouncement();
+    });
+})();
+</script>
+
+
+<script>
+(function(){
+    function updateFrontAnnouncementLabel(){
+        var el=document.getElementById('frontAnnouncementLabel');
+        if(!el) return;
+        var data=null;
+        try{ data=JSON.parse(localStorage.getItem('acho_patient_announcement_v2')||'null'); }catch(e){}
+        if(data && data.text){
+            var shortText=String(data.text).replace(/\s+/g,' ').trim();
+            if(shortText.length>90) shortText=shortText.slice(0,87)+'...';
+            el.innerHTML='<strong>📢 ANNOUNCEMENT!</strong><br><span style="font-size:13px;font-weight:600;color:#2c3e50;">'+
+                shortText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+
+                '</span>';
+        }else{
+            el.innerHTML='<strong>📢 ANNOUNCEMENT!</strong>';
+        }
+    }
+    document.addEventListener('DOMContentLoaded',updateFrontAnnouncementLabel);
+    window.addEventListener('storage',updateFrontAnnouncementLabel);
+})();
+</script>
+
+
+<style>
+.slot-settings-card{margin:12px 15px;padding:14px;border:1px solid #e1e6ea;border-radius:10px;background:#fbfcfd}
+.slot-settings-card h4{margin:0 0 5px;color:#2c3e50}
+.slot-settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.slot-settings-grid label{font-size:11px;font-weight:700;color:#596873}
+.slot-settings-grid input{width:100%;box-sizing:border-box;padding:8px;border:1px solid #d7dee3;border-radius:7px;margin-top:4px}
+.slot-settings-actions{display:flex;gap:6px;margin-top:8px}
+.slot-settings-actions button{flex:1;padding:8px 10px;border:0;border-radius:7px}
+.slot-save{background:#203a63;color:#fff}.slot-reload{background:#e9eef2;color:#34495e}
+.slot-settings-status{font-size:10px;margin-top:6px;color:#6b7280}
+@media(max-width:480px){.slot-settings-grid{grid-template-columns:1fr}}
+</style>
+
+
+<style>
+.admin-slot-preview-card{
+  margin:8px 15px 12px;padding:12px;border:1px solid #e1e6ea;
+  border-radius:10px;background:#fff;
+}
+@media(max-width:480px){
+  .admin-slot-preview-card{margin-left:10px;margin-right:10px}
+}
+</style>
+
+
+<style id="adminMenuFinalStyles">
+.admin-menu-final{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0 12px}
+.admin-menu-btn{border:1px solid #dfe5e9;background:#fff;color:#34495e;border-radius:8px;padding:9px 6px;font-size:10px;font-weight:800;cursor:pointer}
+.admin-menu-btn.active{background:#203a63;color:#fff;border-color:#203a63}
+.admin-panel-section{display:none}
+.admin-panel-section.active{display:block}
+@media(max-width:600px){.admin-menu-final{grid-template-columns:repeat(2,1fr)}}
+</style>
+
 </head>
 <body>
 <button id="adminGearBtn" type="button" onclick="openAdminLogin()" title="Admin Login">⚙️</button>
@@ -668,7 +936,7 @@
     <h2><strong>Antipolo City Health Office</strong></h2>
     <center><p><strong>Dr. Alvin L. Yalung</strong></p></center>
     <center><p><strong>Hotline : ☎ 09165344707 / 8697-0362 / 8689-4518 / 8689-4097</strong></p></center>
-    <center><p style="margin-bottom: 15px;"><strong>Effective September 2, 2026</strong></p></center>
+    <center><p id="frontAnnouncementLabel" style="margin-bottom: 15px;"><strong>📢 ANNOUNCEMENT!</strong></p></center>
 
     <!-- INTERACTIVE SCHEDULE GUIDE ACCORDION -->
     <div class="guide-accordion">
@@ -679,7 +947,7 @@
         <div id="guideContent" class="guide-content">
             • <strong>Para sa MONDAY Checkup:</strong><br>Open ang online registration tuwing <em>Sabado at Linggo</em>.<br><br>
             • <strong>Para sa WEDNESDAY Checkup:</strong><br>Open ang online registration tuwing <em>Lunes at Martes</em>.<br><br>
-            • <strong>Limit:</strong> Unang 30 patients lamang bawat clinic day.
+            • <strong>Limit:</strong> <span id="dynamicSlotGuide">Checking slot limit...</span>
         </div>
     </div>
     
@@ -812,13 +1080,23 @@
 
 <!-- ================= ADMIN DASHBOARD ================= -->
 <div id="adminDashboardModal" class="admin-modal">
-    <div class="admin-panel">
+<div class="admin-panel">
+<div class="admin-panel">
         <div class="admin-head">
             <h3>📊 Admin Dashboard — Client List</h3>
             <button type="button" class="admin-close" onclick="logoutAdmin()">Logout</button>
         </div>
+        <div class="admin-menu-final">
+            <button type="button" class="admin-menu-btn active" id="adminNavClients"
+                    onclick="showAdminPanelSection('clients')">👥 Client List</button>
+            <button type="button" class="admin-menu-btn" id="adminNavSlots"
+                    onclick="showAdminPanelSection('slots')">⚙️ Slot Settings</button>
+            <button type="button" class="admin-menu-btn" id="adminNavAnnouncements"
+                    onclick="showAdminPanelSection('announcements')">📢 Announcements</button>
+        </div>
 
-        <div class="admin-summary">
+        <div id="adminPanelClients" class="admin-panel-section active">
+<div class="admin-summary">
             <div class="summary-card">
                 <div class="summary-number" id="summaryTotal">0</div>
                 <div class="summary-label">Total Clients</div>
@@ -837,12 +1115,15 @@
             </div>
         </div>
 
+
+        <!-- ================= ANNOUNCEMENT ================= -->
+        
+
         <div class="admin-tools">
             <input type="text" id="clientSearch" placeholder="🔎 Search name / OPD / contact">
             <input type="date" id="clientDateFilter">
             <button type="button" class="admin-action" onclick="loadClients()">🔄 Refresh</button>
             <button type="button" class="admin-action" onclick="clearClientFilters()">Clear</button>
-            <button type="button" class="admin-action" onclick="changeAdminPassword()">🔑 Change Password</button>
         </div>
 
         <div id="adminMessage" class="admin-error"></div>
@@ -868,9 +1149,77 @@
                 </tbody>
             </table>
         </div>
+        </div>
+
+        <div id="adminPanelSlots" class="admin-panel-section">
+<div class="slot-settings-card">
+  <h4>⚙️ Check-up Slot Settings</h4>
+  <div style="font-size:10px;color:#7b8790;margin-bottom:8px;">Set the maximum patients for each clinic day.</div>
+  <div class="slot-settings-grid">
+    <label>Monday
+      <input type="number" id="mondaySlotLimit" min="1" max="999" value="30">
+    </label>
+    <label>Wednesday
+      <input type="number" id="wednesdaySlotLimit" min="1" max="999" value="30">
+    </label>
+  </div>
+  <div class="slot-settings-actions">
+    <button type="button" class="slot-save" onclick="saveSlotSettings()">💾 Save</button>
+    <button type="button" class="slot-reload" onclick="loadSlotSettings()">↻ Reload</button>
+  </div>
+  <div id="slotSettingsStatus" class="slot-settings-status"></div>
+</div>
+  <div style="margin-top:10px;padding-top:10px;border-top:1px solid #e7ebee;">
+    <div style="font-weight:800;color:#2c3e50;font-size:12px;margin-bottom:7px;">👁️ SLOT PREVIEW</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <div style="padding:8px;border-radius:8px;background:#f4f7fa;text-align:center;">
+        <div style="font-size:9px;color:#687681;">MONDAY</div>
+        <div id="adminMondayPreview" style="font-size:19px;font-weight:800;color:#203a63;">30</div>
+        <div style="font-size:8px;color:#87929a;">maximum patients</div>
+      </div>
+      <div style="padding:8px;border-radius:8px;background:#f4f7fa;text-align:center;">
+        <div style="font-size:9px;color:#687681;">WEDNESDAY</div>
+        <div id="adminWednesdayPreview" style="font-size:19px;font-weight:800;color:#203a63;">30</div>
+        <div style="font-size:8px;color:#87929a;">maximum patients</div>
+      </div>
+    </div>
+  </div>
+        </div>
+
+        <div id="adminPanelAnnouncements" class="admin-panel-section">
+<div class="announcement-admin-card">
+            <h4>📢 Patient Announcement</h4>
+            <p>Set an important notice that will appear to patients on the front page.</p>
+            <div class="announcement-admin-row">
+                <textarea id="announcementAdminText" maxlength="500"
+                    placeholder="Example: Important notice for our patients..."></textarea>
+            </div>
+            <div class="announcement-admin-buttons">
+                <button type="button" class="announcement-save" onclick="saveAnnouncement()">📢 Publish Announcement</button>
+                <button type="button" class="announcement-clear" onclick="clearAnnouncement()">🗑 Clear</button>
+            </div>
+            <div id="announcementAdminStatus" style="font-size:11px;margin-top:7px;color:#6b7280;"></div>
+        </div>
+        </div>
+
     </div>
 </div>
 
+
+
+<!-- ================= PATIENT ANNOUNCEMENT POPUP ================= -->
+<div id="announcementPopupOverlay" class="announcement-popup-overlay">
+    <div class="announcement-popup">
+        <div class="announcement-popup-head">
+            <div class="announcement-popup-icon">📢</div>
+            <h3>Important Announcement</h3>
+        </div>
+        <div class="announcement-popup-body">
+            <p id="announcementPopupText"></p>
+            <button type="button" class="announcement-popup-ok" onclick="closeAnnouncementPopup()">OK, GOT IT</button>
+        </div>
+    </div>
+</div>
 
 <!-- PROFESSIONAL TOAST -->
 <div id="professionalToast" class="professional-toast"></div>
@@ -965,7 +1314,7 @@
                 } else if (data.slotsRemaining <= 0) {
                     messageDiv.style.display = "block";
                     messageDiv.className = "error";
-                    messageDiv.innerText = "Sorry, all 30 slots for this date are fully booked!";
+                    messageDiv.innerText = "Sorry, all slots for this date are fully booked!";
                     document.getElementById('reviewBtn').disabled = true;
                     slotsRemainingEl.style.color = "#e74c3c";
                 } else {
@@ -1203,6 +1552,7 @@ let allClients = [];
 function openAdminLogin() {
     if (adminLoggedIn) {
         document.getElementById('adminDashboardModal').style.display = 'block';
+        loadAnnouncementAdmin();
         loadClients();
         return;
     }
@@ -1238,8 +1588,12 @@ function adminLogin() {
                 adminPasswordForSession = password;
                 closeAdminLogin();
                 document.getElementById('adminDashboardModal').style.display = 'block';
+                loadAnnouncementAdmin();
                 allClients = data.clients || [];
                 renderClients();
+                if (typeof loadSlotSettings === 'function') {
+                    setTimeout(loadSlotSettings, 100);
+                }
             } else {
                 showAdminLoginError(data.message || 'Invalid admin password.');
             }
@@ -1555,5 +1909,154 @@ document.addEventListener('keydown', function(e) {
     }
 });
 </script>
+
+<script>
+function slotSettingsEndpoint(){
+  return (typeof scriptURL !== 'undefined' ? scriptURL : '');
+}
+function currentAdminPasswordForSlots(){
+  // The normal admin login already stores the authenticated password
+  // in adminPasswordForSession. Use that session value for slot settings.
+  if (typeof adminPasswordForSession !== 'undefined' && adminPasswordForSession) {
+    return adminPasswordForSession;
+  }
+  var input=document.getElementById('adminPassword');
+  return input ? input.value.trim() : '';
+}
+
+function updateAdminSlotPreview(monday,wednesday){
+  var m=document.getElementById('adminMondayPreview');
+  var w=document.getElementById('adminWednesdayPreview');
+  if(m) m.innerText=String(monday);
+  if(w) w.innerText=String(wednesday);
+}
+
+function saveSlotSettings(){
+  var mon=document.getElementById('mondaySlotLimit');
+  var wed=document.getElementById('wednesdaySlotLimit');
+  var status=document.getElementById('slotSettingsStatus');
+  var password=currentAdminPasswordForSlots();
+  if(!mon||!wed||!status) return;
+
+  var monday=String(mon.value||'').trim();
+  var wednesday=String(wed.value||'').trim();
+  if(!/^\d+$/.test(monday)||!/^\d+$/.test(wednesday)||Number(monday)<1||Number(wednesday)<1){
+    status.style.color='#b71c1c';
+    status.innerText='Enter valid slot numbers.';
+    return;
+  }
+
+  status.style.color='#6b7280';
+  status.innerText='Saving...';
+
+  fetch(slotSettingsEndpoint()+'?action=saveSlotSettings&password='+encodeURIComponent(password)+
+        '&monday='+encodeURIComponent(monday)+'&wednesday='+encodeURIComponent(wednesday))
+    .then(r=>r.json())
+    .then(data=>{
+      if(data.result==='success'){
+        mon.value=data.monday;
+        wed.value=data.wednesday;
+        updateAdminSlotPreview(data.monday,data.wednesday);
+        status.style.color='#155724';
+        status.innerText='✅ Slot settings saved.';
+        if(typeof fetchSlotCount==='function'){
+          var dateEl=document.getElementById('date');
+          if(dateEl && dateEl.value) fetchSlotCount(dateEl.value);
+        }
+      }else{
+        status.style.color='#b71c1c';
+        status.innerText='✕ '+(data.message||'Unable to save.');
+      }
+    })
+    .catch(err=>{
+      status.style.color='#b71c1c';
+      status.innerText='✕ Unable to connect to admin server.';
+    });
+}
+function loadSlotSettings(){
+  var status=document.getElementById('slotSettingsStatus');
+  var password=currentAdminPasswordForSlots();
+  if(!status) return;
+  status.style.color='#6b7280';
+  status.innerText='Loading...';
+
+  fetch(slotSettingsEndpoint()+'?action=getSlotSettings&password='+encodeURIComponent(password))
+    .then(r=>r.json())
+    .then(data=>{
+      if(data.result==='success'){
+        document.getElementById('mondaySlotLimit').value=data.monday;
+        document.getElementById('wednesdaySlotLimit').value=data.wednesday;
+        updateAdminSlotPreview(data.monday,data.wednesday);
+        status.style.color='#155724';
+        status.innerText='Current settings loaded.';
+      }else{
+        status.style.color='#b71c1c';
+        status.innerText='✕ '+(data.message||'Unable to load.');
+      }
+    })
+    .catch(err=>{
+      status.style.color='#b71c1c';
+      status.innerText='✕ Unable to connect to admin server.';
+    });
+}
+</script>
+
+
+<script>
+(function(){
+  function updateSlotGuide(){
+    var el=document.getElementById('dynamicSlotGuide');
+    if(!el || typeof scriptURL==='undefined') return;
+    var monday=30,wednesday=30;
+    Promise.all([
+      fetch(scriptURL+'?action=getSlots&date='+nextWeekdayDate(1)).then(r=>r.json()),
+      fetch(scriptURL+'?action=getSlots&date='+nextWeekdayDate(3)).then(r=>r.json())
+    ]).then(function(res){
+      if(res[0] && res[0].slotLimit) monday=res[0].slotLimit;
+      if(res[1] && res[1].slotLimit) wednesday=res[1].slotLimit;
+      el.innerText='Monday: '+monday+' patients • Wednesday: '+wednesday+' patients.';
+    }).catch(function(){ el.innerText='Monday and Wednesday slot limits apply.'; });
+  }
+  function nextWeekdayDate(day){
+    var d=new Date(), delta=(day-d.getDay()+7)%7;
+    if(delta===0) delta=7;
+    d.setDate(d.getDate()+delta);
+    var y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),dd=String(d.getDate()).padStart(2,'0');
+    return y+'-'+m+'-'+dd;
+  }
+  document.addEventListener('DOMContentLoaded',updateSlotGuide);
+})();
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  // Slot settings are loaded after successful admin login.
+});
+</script>
+
+
+<script id="adminMenuFinalScript">
+function showAdminPanelSection(section){
+    var sections={
+        clients:document.getElementById('adminPanelClients'),
+        slots:document.getElementById('adminPanelSlots'),
+        announcements:document.getElementById('adminPanelAnnouncements')
+    };
+    Object.keys(sections).forEach(function(k){
+        if(sections[k]) sections[k].classList.toggle('active',k===section);
+    });
+    ['adminNavClients','adminNavSlots','adminNavAnnouncements'].forEach(function(id){
+        var b=document.getElementById(id);
+        if(b) b.classList.remove('active');
+    });
+    var active={clients:'adminNavClients',slots:'adminNavSlots',announcements:'adminNavAnnouncements'}[section];
+    if(active && document.getElementById(active)) document.getElementById(active).classList.add('active');
+    if(section==='slots' && typeof loadSlotSettings==='function'){
+        setTimeout(loadSlotSettings,100);
+    }
+}
+</script>
+
 </body>
 </html>
