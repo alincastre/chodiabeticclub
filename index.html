@@ -706,189 +706,165 @@
 
 </style>
 <script>
+
 // ================= PATIENT ANNOUNCEMENT =================
-const ANNOUNCEMENT_STORAGE_KEY = 'acho_patient_announcement_v1';
+function announcementUrl(action, params){
+  var url = scriptURL + '?action=' + encodeURIComponent(action);
+  params = params || {};
+  Object.keys(params).forEach(function(k){
+    url += '&' + encodeURIComponent(k) + '=' + encodeURIComponent(params[k]);
+  });
+  url += '&_=' + Date.now();
+  return url;
+}
 
-function getAnnouncementData(){
-    try { return JSON.parse(localStorage.getItem(ANNOUNCEMENT_STORAGE_KEY) || 'null'); }
-    catch(e){ return null; }
+function getAnnouncementPassword(){
+  if (typeof adminPasswordForSession !== 'undefined' && adminPasswordForSession) {
+    return adminPasswordForSession;
+  }
+  return '';
 }
-function saveAnnouncement(){
-    const field=document.getElementById('announcementAdminText');
-    const status=document.getElementById('announcementAdminStatus');
-    const text=(field ? field.value : '').trim();
-    if(!text){
-        if(status) status.innerText='Please enter an announcement first.';
-        return;
-    }
-    const data={text:text,version:Date.now()};
-    localStorage.setItem(ANNOUNCEMENT_STORAGE_KEY,JSON.stringify(data));
-    if(status){
-        status.style.color='#155724';
-        status.innerText='✅ Announcement published successfully.';
-    }
-    showAnnouncementPopup(text);
+
+function updateFrontAnnouncement(text){
+  var el = document.getElementById('frontAnnouncementText');
+  if (!el) return;
+  el.textContent = (text && String(text).trim())
+    ? String(text).trim()
+    : 'No announcement at this time.';
 }
-function clearAnnouncement(){
-    localStorage.removeItem(ANNOUNCEMENT_STORAGE_KEY);
-    const field=document.getElementById('announcementAdminText');
-    const status=document.getElementById('announcementAdminStatus');
-    if(field) field.value='';
-    if(status){
-        status.style.color='#6b7280';
-        status.innerText='Announcement cleared from this browser.';
-    }
-    closeAnnouncementPopup();
-}
+
 function showAnnouncementPopup(text){
-    const overlay=document.getElementById('announcementPopupOverlay');
-    const target=document.getElementById('announcementPopupText');
-    if(!overlay||!target)return;
-    target.innerText=text;
-    overlay.style.display='flex';
+  var overlay = document.getElementById('announcementPopupOverlay');
+  var target = document.getElementById('announcementPopupText');
+  if (!overlay || !target || !text) return;
+  target.textContent = text;
+  overlay.style.display = 'flex';
 }
+
 function closeAnnouncementPopup(){
-    const overlay=document.getElementById('announcementPopupOverlay');
-    if(overlay) overlay.style.display='none';
+  var overlay = document.getElementById('announcementPopupOverlay');
+  if (overlay) overlay.style.display = 'none';
 }
+
 function loadAnnouncementAdmin(){
-    const data=getAnnouncementData();
-    const field=document.getElementById('announcementAdminText');
-    const status=document.getElementById('announcementAdminStatus');
-    if(data && field){
-        field.value=data.text || '';
-        if(status) status.innerText='Current announcement is saved on this browser.';
-    }
-}
-function checkPatientAnnouncement(){
-    const data=getAnnouncementData();
-    if(!data || !data.text)return;
-    const seen=sessionStorage.getItem('acho_seen_announcement_version');
-    if(String(seen)!==String(data.version)){
-        sessionStorage.setItem('acho_seen_announcement_version',String(data.version));
-        showAnnouncementPopup(data.text);
-    }
-}
-document.addEventListener('DOMContentLoaded',function(){
-    loadAnnouncementAdmin();
-    checkPatientAnnouncement();
-});
-</script>
+  var field = document.getElementById('announcementAdminText');
+  var status = document.getElementById('announcementAdminStatus');
+  if (!field || !status) return;
 
-<script>
-(function(){
-    const ANNOUNCEMENT_STORAGE_KEY = 'acho_patient_announcement_v2';
+  status.textContent = 'Loading announcement...';
 
-    function getAnnouncementData(){
-        try { return JSON.parse(localStorage.getItem(ANNOUNCEMENT_STORAGE_KEY) || 'null'); }
-        catch(e){ return null; }
-    }
-
-    window.saveAnnouncement = function(){
-        const field = document.getElementById('announcementAdminText');
-        const status = document.getElementById('announcementAdminStatus');
-        const text = (field ? field.value : '').trim();
-
-        if(!text){
-            if(status){
-                status.style.color = '#b71c1c';
-                status.innerText = 'Please enter an announcement first.';
-            }
-            return;
-        }
-
-        const data = { text:text, version:String(Date.now()) };
-        localStorage.setItem(ANNOUNCEMENT_STORAGE_KEY, JSON.stringify(data));
-
-        if(status){
-            status.style.color = '#155724';
-            status.innerText = '✅ Announcement published successfully.';
-        }
-
-        window.showAnnouncementPopup(text);
-    };
-
-    window.clearAnnouncement = function(){
-        localStorage.removeItem(ANNOUNCEMENT_STORAGE_KEY);
-        localStorage.removeItem('acho_seen_announcement_version_v2');
-
-        const field = document.getElementById('announcementAdminText');
-        const status = document.getElementById('announcementAdminStatus');
-
-        if(field) field.value = '';
-        if(status){
-            status.style.color = '#6b7280';
-            status.innerText = 'Announcement cleared from this browser.';
-        }
-
-        window.closeAnnouncementPopup();
-    };
-
-    window.showAnnouncementPopup = function(text){
-        const overlay = document.getElementById('announcementPopupOverlay');
-        const target = document.getElementById('announcementPopupText');
-        if(!overlay || !target) return;
-
-        target.textContent = text;
-        overlay.style.display = 'flex';
-    };
-
-    window.closeAnnouncementPopup = function(){
-        const overlay = document.getElementById('announcementPopupOverlay');
-        if(overlay) overlay.style.display = 'none';
-    };
-
-    function loadAnnouncementAdmin(){
-        const data = getAnnouncementData();
-        const field = document.getElementById('announcementAdminText');
-        const status = document.getElementById('announcementAdminStatus');
-
-        if(data && field){
-            field.value = data.text || '';
-            if(status) status.innerText = 'Current announcement is saved on this browser.';
-        }
-    }
-
-    function checkPatientAnnouncement(){
-        const data = getAnnouncementData();
-        if(!data || !data.text) return;
-
-        const seen = sessionStorage.getItem('acho_seen_announcement_version_v2');
-        if(String(seen) !== String(data.version)){
-            sessionStorage.setItem('acho_seen_announcement_version_v2', String(data.version));
-            window.showAnnouncementPopup(data.text);
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', function(){
-        loadAnnouncementAdmin();
-        checkPatientAnnouncement();
+  fetch(announcementUrl('getAnnouncement'), {cache:'no-store'})
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      if (data && data.result === 'success') {
+        field.value = data.text || '';
+        updateFrontAnnouncement(data.text || '');
+        status.textContent = data.text
+          ? 'Current announcement loaded.'
+          : 'No announcement published yet.';
+      } else {
+        status.textContent = 'No announcement published yet.';
+      }
+    })
+    .catch(function(){
+      status.textContent = '✕ Unable to load announcement.';
     });
-})();
+}
+
+function saveAnnouncement(){
+  var field = document.getElementById('announcementAdminText');
+  var status = document.getElementById('announcementAdminStatus');
+  var text = field ? field.value.trim() : '';
+  var password = getAnnouncementPassword();
+
+  if (!text) {
+    if (status) status.textContent = 'Please enter an announcement first.';
+    return;
+  }
+
+  if (!password) {
+    if (status) status.textContent = '✕ Admin session not found. Please log in again.';
+    return;
+  }
+
+  if (status) status.textContent = 'Publishing announcement...';
+
+  fetch(announcementUrl('saveAnnouncement', {
+      password: password,
+      text: text
+    }), {cache:'no-store'})
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      if (data && data.result === 'success') {
+        var saved = data.text || text;
+        updateFrontAnnouncement(saved);
+        if (status) status.textContent = '✅ Announcement published successfully.';
+        showAnnouncementPopup(saved);
+      } else {
+        if (status) status.textContent = '✕ ' + ((data && data.message) || 'Unable to publish announcement.');
+      }
+    })
+    .catch(function(){
+      if (status) status.textContent = '✕ Unable to connect to the admin server.';
+    });
+}
+
+function clearAnnouncement(){
+  var field = document.getElementById('announcementAdminText');
+  var status = document.getElementById('announcementAdminStatus');
+  var password = getAnnouncementPassword();
+
+  if (!password) {
+    if (status) status.textContent = '✕ Admin session not found. Please log in again.';
+    return;
+  }
+
+  if (status) status.textContent = 'Clearing announcement...';
+
+  fetch(announcementUrl('clearAnnouncement', {
+      password: password
+    }), {cache:'no-store'})
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      if (data && data.result === 'success') {
+        if (field) field.value = '';
+        updateFrontAnnouncement('');
+        closeAnnouncementPopup();
+        if (status) status.textContent = '✅ Announcement cleared.';
+      } else {
+        if (status) status.textContent = '✕ ' + ((data && data.message) || 'Unable to clear announcement.');
+      }
+    })
+    .catch(function(){
+      if (status) status.textContent = '✕ Unable to connect to the admin server.';
+    });
+}
+
+function checkPatientAnnouncement(){
+  fetch(announcementUrl('getAnnouncement'), {cache:'no-store'})
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      var text = (data && data.result === 'success') ? (data.text || '') : '';
+      updateFrontAnnouncement(text);
+      if (!text) return;
+
+      var hash = btoa(unescape(encodeURIComponent(text))).slice(0,100);
+      var seen = sessionStorage.getItem('announcement_seen_v2');
+      if (seen !== hash) {
+        sessionStorage.setItem('announcement_seen_v2', hash);
+        showAnnouncementPopup(text);
+      }
+    })
+    .catch(function(){});
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+  checkPatientAnnouncement();
+});
+
 </script>
 
 
-<script>
-(function(){
-    function updateFrontAnnouncementLabel(){
-        var el=document.getElementById('frontAnnouncementLabel');
-        if(!el) return;
-        var data=null;
-        try{ data=JSON.parse(localStorage.getItem('acho_patient_announcement_v2')||'null'); }catch(e){}
-        if(data && data.text){
-            var shortText=String(data.text).replace(/\s+/g,' ').trim();
-            if(shortText.length>90) shortText=shortText.slice(0,87)+'...';
-            el.innerHTML='<strong>📢 ANNOUNCEMENT!</strong><br><span style="font-size:13px;font-weight:600;color:#2c3e50;">'+
-                shortText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+
-                '</span>';
-        }else{
-            el.innerHTML='<strong>📢 ANNOUNCEMENT!</strong>';
-        }
-    }
-    document.addEventListener('DOMContentLoaded',updateFrontAnnouncementLabel);
-    window.addEventListener('storage',updateFrontAnnouncementLabel);
-})();
-</script>
 
 
 <style>
@@ -925,6 +901,31 @@ document.addEventListener('DOMContentLoaded',function(){
 @media(max-width:600px){.admin-menu-final{grid-template-columns:repeat(2,1fr)}}
 </style>
 
+
+<style id="doctorScheduleStyles">
+.doctor-schedule-grid{border:1px solid #e5eaee;border-radius:8px;overflow:hidden}
+.doctor-schedule-head,.doctor-schedule-row{display:grid;grid-template-columns:48px 1fr 92px;align-items:center;gap:7px;padding:7px 8px;font-size:10px}
+.doctor-schedule-head{background:#f4f7fa;color:#687681;font-weight:800}
+.doctor-schedule-row{border-top:1px solid #edf0f2}
+.doctor-schedule-row input[type="checkbox"]{width:16px;height:16px;margin:0}
+.doctor-schedule-row input[type="number"]{width:100%;box-sizing:border-box;padding:7px;border:1px solid #d7dee3;border-radius:6px}
+.admin-schedule-preview{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.admin-schedule-preview .preview-day{padding:7px;border-radius:7px;background:#f4f7fa;font-size:10px}
+.admin-schedule-preview .preview-day strong{display:block;color:#203a63}
+.admin-schedule-preview .preview-day span{color:#687681}
+.dynamic-schedule-line{margin-bottom:8px}
+@media(max-width:480px){
+  .doctor-schedule-head,.doctor-schedule-row{grid-template-columns:38px 1fr 80px}
+  .admin-schedule-preview{grid-template-columns:1fr}
+}
+</style>
+
+<style id="announcementModuleV3Style">
+#announcementAdminText{background:#fff;display:block}
+.announcement-admin-card{background:#fbfcfd}
+#announcementAdminStatus{min-height:16px}
+#frontAnnouncementText{white-space:pre-line}
+</style>
 </head>
 <body>
 <button id="adminGearBtn" type="button" onclick="openAdminLogin()" title="Admin Login">⚙️</button>
@@ -936,7 +937,12 @@ document.addEventListener('DOMContentLoaded',function(){
     <h2><strong>Antipolo City Health Office</strong></h2>
     <center><p><strong>Dr. Alvin L. Yalung</strong></p></center>
     <center><p><strong>Hotline : ☎ 09165344707 / 8697-0362 / 8689-4518 / 8689-4097</strong></p></center>
-    <center><p id="frontAnnouncementLabel" style="margin-bottom: 15px;"><strong>📢 ANNOUNCEMENT!</strong></p></center>
+    <center>
+        <p id="frontAnnouncementLabel" style="margin-bottom: 5px;"><strong>📢 ANNOUNCEMENT!</strong></p>
+        <p id="frontAnnouncementText" style="margin:0 auto 15px;max-width:700px;color:#596873;font-size:13px;line-height:1.5;">
+            No announcement at this time.
+        </p>
+    </center>
 
     <!-- INTERACTIVE SCHEDULE GUIDE ACCORDION -->
     <div class="guide-accordion">
@@ -945,9 +951,7 @@ document.addEventListener('DOMContentLoaded',function(){
             <span id="guideIcon">▼</span>
         </div>
         <div id="guideContent" class="guide-content">
-            • <strong>Para sa MONDAY Checkup:</strong><br>Open ang online registration tuwing <em>Sabado at Linggo</em>.<br><br>
-            • <strong>Para sa WEDNESDAY Checkup:</strong><br>Open ang online registration tuwing <em>Lunes at Martes</em>.<br><br>
-            • <strong>Limit:</strong> <span id="dynamicSlotGuide">Checking slot limit...</span>
+<div id="dynamicScheduleGuide">Loading schedule...</div>
         </div>
     </div>
     
@@ -1081,7 +1085,6 @@ document.addEventListener('DOMContentLoaded',function(){
 <!-- ================= ADMIN DASHBOARD ================= -->
 <div id="adminDashboardModal" class="admin-modal">
 <div class="admin-panel">
-<div class="admin-panel">
         <div class="admin-head">
             <h3>📊 Admin Dashboard — Client List</h3>
             <button type="button" class="admin-close" onclick="logoutAdmin()">Logout</button>
@@ -1152,54 +1155,102 @@ document.addEventListener('DOMContentLoaded',function(){
         </div>
 
         <div id="adminPanelSlots" class="admin-panel-section">
+
 <div class="slot-settings-card">
-  <h4>⚙️ Check-up Slot Settings</h4>
-  <div style="font-size:10px;color:#7b8790;margin-bottom:8px;">Set the maximum patients for each clinic day.</div>
-  <div class="slot-settings-grid">
-    <label>Monday
-      <input type="number" id="mondaySlotLimit" min="1" max="999" value="30">
+  <h4>⚙️ Doctor Schedule Settings</h4>
+  <div style="font-size:10px;color:#7b8790;margin-bottom:8px;">
+    Check the days the doctor is available. Slot limit is adjustable per check-up day.
+    Registration dates are calculated automatically.
+  </div>
+
+  <div class="doctor-schedule-grid">
+    <div class="doctor-schedule-head"><span>Open</span><span>Check-up Day</span><span>Slots</span></div>
+
+    <label class="doctor-schedule-row">
+      <input type="checkbox" id="scheduleDay1">
+      <strong>Monday</strong>
+      <input type="number" id="scheduleSlots1" min="1" max="999" value="30">
     </label>
-    <label>Wednesday
-      <input type="number" id="wednesdaySlotLimit" min="1" max="999" value="30">
+
+    <label class="doctor-schedule-row">
+      <input type="checkbox" id="scheduleDay2">
+      <strong>Tuesday</strong>
+      <input type="number" id="scheduleSlots2" min="1" max="999" value="30">
+    </label>
+
+    <label class="doctor-schedule-row">
+      <input type="checkbox" id="scheduleDay3">
+      <strong>Wednesday</strong>
+      <input type="number" id="scheduleSlots3" min="1" max="999" value="30">
+    </label>
+
+    <label class="doctor-schedule-row">
+      <input type="checkbox" id="scheduleDay4">
+      <strong>Thursday</strong>
+      <input type="number" id="scheduleSlots4" min="1" max="999" value="30">
+    </label>
+
+    <label class="doctor-schedule-row">
+      <input type="checkbox" id="scheduleDay5">
+      <strong>Friday</strong>
+      <input type="number" id="scheduleSlots5" min="1" max="999" value="30">
     </label>
   </div>
+
   <div class="slot-settings-actions">
-    <button type="button" class="slot-save" onclick="saveSlotSettings()">💾 Save</button>
-    <button type="button" class="slot-reload" onclick="loadSlotSettings()">↻ Reload</button>
+    <button type="button" class="slot-save" onclick="saveScheduleSettings()">💾 Save Schedule</button>
+    <button type="button" class="slot-reload" onclick="loadScheduleSettings()">↻ Reload</button>
   </div>
   <div id="slotSettingsStatus" class="slot-settings-status"></div>
-</div>
+
   <div style="margin-top:10px;padding-top:10px;border-top:1px solid #e7ebee;">
-    <div style="font-weight:800;color:#2c3e50;font-size:12px;margin-bottom:7px;">👁️ SLOT PREVIEW</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-      <div style="padding:8px;border-radius:8px;background:#f4f7fa;text-align:center;">
-        <div style="font-size:9px;color:#687681;">MONDAY</div>
-        <div id="adminMondayPreview" style="font-size:19px;font-weight:800;color:#203a63;">30</div>
-        <div style="font-size:8px;color:#87929a;">maximum patients</div>
-      </div>
-      <div style="padding:8px;border-radius:8px;background:#f4f7fa;text-align:center;">
-        <div style="font-size:9px;color:#687681;">WEDNESDAY</div>
-        <div id="adminWednesdayPreview" style="font-size:19px;font-weight:800;color:#203a63;">30</div>
-        <div style="font-size:8px;color:#87929a;">maximum patients</div>
-      </div>
-    </div>
+    <div style="font-weight:800;color:#2c3e50;font-size:12px;margin-bottom:7px;">👁️ SCHEDULE PREVIEW</div>
+    <div id="adminSchedulePreview" class="admin-schedule-preview">Loading...</div>
   </div>
+</div>
+
+
+
         </div>
 
-        <div id="adminPanelAnnouncements" class="admin-panel-section">
-<div class="announcement-admin-card">
-            <h4>📢 Patient Announcement</h4>
-            <p>Set an important notice that will appear to patients on the front page.</p>
-            <div class="announcement-admin-row">
-                <textarea id="announcementAdminText" maxlength="500"
-                    placeholder="Example: Important notice for our patients..."></textarea>
-            </div>
-            <div class="announcement-admin-buttons">
-                <button type="button" class="announcement-save" onclick="saveAnnouncement()">📢 Publish Announcement</button>
-                <button type="button" class="announcement-clear" onclick="clearAnnouncement()">🗑 Clear</button>
-            </div>
-            <div id="announcementAdminStatus" style="font-size:11px;margin-top:7px;color:#6b7280;"></div>
-        </div>
+<div id="adminPanelAnnouncements" class="admin-panel-section">
+  <div class="announcement-admin-card"
+       style="border:1px solid #e1e6ea;border-radius:10px;padding:15px;background:#fff;margin-top:8px;">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+      <span style="font-size:20px;">📢</span>
+      <h3 style="margin:0;color:#2c3e50;font-size:17px;">Patient Announcement</h3>
+    </div>
+
+    <p style="margin:0 0 12px;color:#6b7280;font-size:11px;">
+      Set an important notice that will appear to patients on the front page.
+    </p>
+
+    <textarea id="announcementAdminText"
+      maxlength="500"
+      placeholder="Type your announcement here..."
+      style="display:block;width:100%;min-height:110px;box-sizing:border-box;resize:vertical;padding:11px;border:1px solid #cfd8df;border-radius:8px;background:#fff;color:#263746;font:14px Arial,sans-serif;"></textarea>
+
+    <div style="display:flex;gap:8px;margin-top:10px;">
+      <button type="button" id="publishAnnouncementBtn"
+        onclick="saveAnnouncement()"
+        style="border:0;border-radius:7px;padding:9px 13px;background:#203a63;color:#fff;font-weight:800;cursor:pointer;">
+        📢 Publish Announcement
+      </button>
+
+      <button type="button" id="clearAnnouncementBtn"
+        onclick="clearAnnouncement()"
+        style="border:0;border-radius:7px;padding:9px 13px;background:#e74c3c;color:#fff;font-weight:800;cursor:pointer;">
+        🗑 Clear
+      </button>
+    </div>
+
+    <div id="announcementAdminStatus"
+      style="font-size:11px;margin-top:9px;color:#6b7280;min-height:18px;">
+      No announcement published yet.
+    </div>
+  </div>
+</div>
+
         </div>
 
     </div>
@@ -1295,6 +1346,8 @@ document.addEventListener('DOMContentLoaded',function(){
     });
 
     // 3. Fetch Slot Count
+    let frontpageSchedule = null;
+
     function fetchSlotCount(dateStr) {
         totalRegisteredEl.innerText = "...";
         slotsRemainingEl.innerText = "...";
@@ -1304,17 +1357,24 @@ document.addEventListener('DOMContentLoaded',function(){
         fetch(`${scriptURL}?action=getSlots&date=${dateStr}`)
             .then(res => res.json())
             .then(data => {
-                dashboardDateText.innerText = `Slots for: ${dateStr}`;
+                if (!data.enabled) {
+                    dashboardDateText.innerText = "Check-up day is unavailable";
+                    totalRegisteredEl.innerText = "0";
+                    slotsRemainingEl.innerText = "0";
+                    return;
+                }
+
+                dashboardDateText.innerText = `Slots for: ${data.checkupDay} — ${dateStr}`;
                 totalRegisteredEl.innerText = data.totalRegistered;
                 slotsRemainingEl.innerText = data.slotsRemaining;
 
                 if (data.slotsRemaining <= 5 && data.slotsRemaining > 0) {
-                    dashboardCard.classList.add('warning'); 
+                    dashboardCard.classList.add('warning');
                     slotsRemainingEl.style.color = "#fff";
                 } else if (data.slotsRemaining <= 0) {
                     messageDiv.style.display = "block";
                     messageDiv.className = "error";
-                    messageDiv.innerText = "Sorry, all slots for this date are fully booked!";
+                    messageDiv.innerText = `Sorry, all ${data.slotLimit} slots for ${data.checkupDay} are fully booked!`;
                     document.getElementById('reviewBtn').disabled = true;
                     slotsRemainingEl.style.color = "#e74c3c";
                 } else {
@@ -1324,58 +1384,58 @@ document.addEventListener('DOMContentLoaded',function(){
             })
             .catch(err => {
                 console.error("Error fetching slots:", err);
-                dashboardDateText.innerText = "Select a valid Date";
+                dashboardDateText.innerText = "Unable to check slots";
             });
     }
 
-    // 4. Schedule Rules Validation
+    function getTodayDay(){
+        return new Date().getDay();
+    }
+
+    function registrationIsOpenForSelectedDate(selectedDay){
+        if(!frontpageSchedule || !frontpageSchedule[String(selectedDay)]) return false;
+        const c=frontpageSchedule[String(selectedDay)];
+        if(!c.enabled) return false;
+        const openDays=c.registrationDays||[];
+        return openDays.indexOf(getTodayDay())!==-1;
+    }
+
+    function scheduleMessageFor(selectedDay){
+        const c=frontpageSchedule && frontpageSchedule[String(selectedDay)];
+        if(!c || !c.enabled) return "Walang check-up schedule sa napiling araw.";
+        const names=['Linggo','Lunes','Martes','Miyerkules','Huwebes','Biyernes','Sabado'];
+        const openNames=(c.registrationDays||[]).map(d=>names[d]).join(' at ');
+        return `OPEN ang Registration para sa ${c.name.toUpperCase()} Checkup tuwing ${openNames}.`;
+    }
+
+    // 4. Schedule Rules Validation — controlled entirely by Admin settings.
     dateInput.addEventListener('change', function () {
         const selectedDateStr = this.value;
-        if (!selectedDateStr) return;
+        if (!selectedDateStr || !frontpageSchedule) return;
 
         const selectedDate = new Date(selectedDateStr + "T00:00:00");
         const selectedDay = selectedDate.getDay();
-        
-        const todayObj = new Date();
-        const currentDay = todayObj.getDay();
-        
-        let isOpen = false;
-        let message = "";
+        const config = frontpageSchedule[String(selectedDay)];
 
-        if (selectedDay !== 1 && selectedDay !== 3) {
+        if (!config || !config.enabled) {
             messageDiv.style.display = "block";
             messageDiv.className = "error";
-            messageDiv.innerText = "Mali ang napiling araw. Ang Checkup ay tuwing LUNES at MIYERKULES lamang.";
+            messageDiv.innerText = "Walang check-up schedule sa napiling araw.";
             document.getElementById('reviewBtn').disabled = true;
             this.value = "";
             totalRegisteredEl.innerText = "--";
             slotsRemainingEl.innerText = "--";
-            dashboardDateText.innerText = "Pumili ng Lunes o Miyerkules";
+            dashboardDateText.innerText = "Pumili ng available check-up day";
             dashboardCard.classList.remove('warning');
             return;
         }
 
-        if (selectedDay === 1) { 
-            if (currentDay === 6 || currentDay === 0) { 
-                isOpen = true;
-                message = "OPEN ang Registration para sa Checkup sa MONDAY!";
-            } else {
-                isOpen = false;
-                message = "CLOSED. Ang registration para sa Monday checkup ay tuwing SABADO at LINGGO lamang.";
-            }
-        } else if (selectedDay === 3) { 
-            if (currentDay === 1 || currentDay === 2) { 
-                isOpen = true;
-                message = "OPEN ang Registration para sa Checkup sa WEDNESDAY!";
-            } else {
-                isOpen = false;
-                message = "CLOSED. Ang registration para sa Wednesday checkup ay tuwing LUNES at MARTES lamang.";
-            }
-        }
-
+        const isOpen = registrationIsOpenForSelectedDate(selectedDay);
         messageDiv.style.display = "block";
         messageDiv.className = isOpen ? "success" : "error";
-        messageDiv.innerText = message;
+        messageDiv.innerText = isOpen
+            ? `OPEN ang Registration para sa ${config.name.toUpperCase()} Checkup!`
+            : `CLOSED. ${scheduleMessageFor(selectedDay)}`;
 
         if (!isOpen) {
             document.getElementById('reviewBtn').disabled = true;
@@ -1391,17 +1451,55 @@ document.addEventListener('DOMContentLoaded',function(){
         fetchSlotCount(selectedDateStr);
     });
 
-    // 5. Auto-Detect Current Registration Window
-    function autoCheckTodaySlot() {
-        const todayObj = new Date();
-        const currentDay = todayObj.getDay();
-        let targetDate = new Date();
+    function loadFrontpageSchedule(){
+        return fetch(`${scriptURL}?action=getScheduleSettings`)
+            .then(res=>res.json())
+            .then(data=>{
+                if(data.result!=='success') throw new Error(data.message||'Unable to load schedule');
+                frontpageSchedule=data.schedule;
+                renderFrontpageScheduleGuide(data.schedule);
+                return data.schedule;
+            });
+    }
 
-        if (currentDay === 6) targetDate.setDate(todayObj.getDate() + 2);
-        else if (currentDay === 0) targetDate.setDate(todayObj.getDate() + 1);
-        else if (currentDay === 1) targetDate.setDate(todayObj.getDate() + 2);
-        else if (currentDay === 2) targetDate.setDate(todayObj.getDate() + 1);
-        else {
+    function renderFrontpageScheduleGuide(schedule){
+        const el=document.getElementById('dynamicScheduleGuide');
+        if(!el) return;
+        const names=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+        let out='';
+        for(let day=1;day<=5;day++){
+            const c=schedule[String(day)];
+            if(c && c.enabled){
+                const regs=(c.registrationDays||[]).map(d=>names[d]).join(' & ');
+                out += `<div class="dynamic-schedule-line">• <strong>Para sa ${c.name.toUpperCase()} Checkup:</strong><br>Open ang online registration tuwing <em>${regs}</em>.<br><strong>Limit:</strong> ${c.slots} patients.</div>`;
+            }
+        }
+        el.innerHTML=out || '<div style="color:#b71c1c;">Walang available check-up day sa ngayon.</div>';
+    }
+
+    function autoCheckTodaySlot() {
+        if(!frontpageSchedule){
+            document.getElementById('reviewBtn').disabled = true;
+            dashboardDateText.innerText = "Loading schedule...";
+            return;
+        }
+
+        const currentDay = getTodayDay();
+        let targetDate = null;
+
+        // Find the nearest upcoming enabled check-up date whose registration window is open today.
+        for(let offset=0; offset<=7; offset++){
+            const d=new Date();
+            d.setDate(d.getDate()+offset);
+            const day=d.getDay();
+            const c=frontpageSchedule[String(day)];
+            if(c && c.enabled && (c.registrationDays||[]).indexOf(currentDay)!==-1){
+                targetDate=d;
+                break;
+            }
+        }
+
+        if(!targetDate){
             dashboardDateText.innerText = "Registration Currently Closed";
             totalRegisteredEl.innerText = "0";
             slotsRemainingEl.innerText = "0";
@@ -1414,7 +1512,14 @@ document.addEventListener('DOMContentLoaded',function(){
         dateInput.dispatchEvent(new Event('change'));
     }
 
-    window.addEventListener('DOMContentLoaded', autoCheckTodaySlot);
+    window.addEventListener('DOMContentLoaded', function(){
+        loadFrontpageSchedule()
+          .then(autoCheckTodaySlot)
+          .catch(function(){
+              dashboardDateText.innerText="Unable to load doctor schedule";
+              document.getElementById('reviewBtn').disabled=true;
+          });
+    });
 
     // 6. Confirmation Modal Handlers
     function openConfirmationModal() {
@@ -1931,101 +2036,107 @@ function updateAdminSlotPreview(monday,wednesday){
   if(w) w.innerText=String(wednesday);
 }
 
-function saveSlotSettings(){
-  var mon=document.getElementById('mondaySlotLimit');
-  var wed=document.getElementById('wednesdaySlotLimit');
+
+function getScheduleSettingsUrl(action){
+  return scriptURL+'?action='+action;
+}
+
+function renderAdminSchedulePreview(schedule){
+  var box=document.getElementById('adminSchedulePreview');
+  if(!box) return;
+  var html='';
+  for(var day=1;day<=5;day++){
+    var c=schedule[String(day)];
+    if(c && c.enabled){
+      html+='<div class="preview-day"><strong>🟢 '+c.name+'</strong><span>'+c.slots+' patients<br>'+formatRegistrationDays(c.registrationDays)+'</span></div>';
+    }
+  }
+  box.innerHTML=html || '<div style="font-size:10px;color:#b71c1c;">No check-up day selected.</div>';
+}
+function formatRegistrationDays(days){
+  var names=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  return 'Registration: '+(days||[]).map(function(d){return names[d];}).join(' & ');
+}
+function loadScheduleSettings(){
+  var status=document.getElementById('slotSettingsStatus');
+  if(!status) return;
+  status.style.color='#6b7280';
+  status.innerText='Loading...';
+  fetch(getScheduleSettingsUrl('getScheduleSettings'))
+    .then(function(r){return r.json();})
+    .then(function(data){
+      if(data.result!=='success') throw new Error(data.message||'Unable to load schedule.');
+      for(var day=1;day<=5;day++){
+        var c=data.schedule[String(day)]||{};
+        var cb=document.getElementById('scheduleDay'+day);
+        var input=document.getElementById('scheduleSlots'+day);
+        if(cb) cb.checked=!!c.enabled;
+        if(input) input.value=(c.slots||30);
+      }
+      renderAdminSchedulePreview(data.schedule);
+      status.style.color='#155724';
+      status.innerText='Current doctor schedule loaded.';
+    })
+    .catch(function(err){
+      status.style.color='#b71c1c';
+      status.innerText='✕ Unable to connect to admin server.';
+    });
+}
+function saveScheduleSettings(){
   var status=document.getElementById('slotSettingsStatus');
   var password=currentAdminPasswordForSlots();
-  if(!mon||!wed||!status) return;
+  var schedule={};
+  var enabledCount=0;
 
-  var monday=String(mon.value||'').trim();
-  var wednesday=String(wed.value||'').trim();
-  if(!/^\d+$/.test(monday)||!/^\d+$/.test(wednesday)||Number(monday)<1||Number(wednesday)<1){
+  for(var day=1;day<=5;day++){
+    var cb=document.getElementById('scheduleDay'+day);
+    var input=document.getElementById('scheduleSlots'+day);
+    var enabled=!!(cb&&cb.checked);
+    var slots=parseInt(input&&input.value,10);
+    if(enabled){
+      if(isNaN(slots)||slots<1||slots>999){
+        status.style.color='#b71c1c';
+        status.innerText='Enter valid slots (1–999) for every selected day.';
+        return;
+      }
+      enabledCount++;
+    }
+    schedule[String(day)]={enabled:enabled,slots:enabled?slots:0};
+  }
+
+  if(!enabledCount){
     status.style.color='#b71c1c';
-    status.innerText='Enter valid slot numbers.';
+    status.innerText='Select at least one check-up day.';
     return;
   }
 
   status.style.color='#6b7280';
   status.innerText='Saving...';
 
-  fetch(slotSettingsEndpoint()+'?action=saveSlotSettings&password='+encodeURIComponent(password)+
-        '&monday='+encodeURIComponent(monday)+'&wednesday='+encodeURIComponent(wednesday))
-    .then(r=>r.json())
-    .then(data=>{
+  fetch(getScheduleSettingsUrl('saveScheduleSettings')
+    +'&password='+encodeURIComponent(password)
+    +'&settings='+encodeURIComponent(JSON.stringify(schedule)))
+    .then(function(r){return r.json();})
+    .then(function(data){
       if(data.result==='success'){
-        mon.value=data.monday;
-        wed.value=data.wednesday;
-        updateAdminSlotPreview(data.monday,data.wednesday);
+        renderAdminSchedulePreview(data.schedule);
         status.style.color='#155724';
-        status.innerText='✅ Slot settings saved.';
+        status.innerText='✅ Doctor schedule saved.';
+        loadFrontpageSchedule();
         if(typeof fetchSlotCount==='function'){
           var dateEl=document.getElementById('date');
           if(dateEl && dateEl.value) fetchSlotCount(dateEl.value);
         }
       }else{
         status.style.color='#b71c1c';
-        status.innerText='✕ '+(data.message||'Unable to save.');
+        status.innerText='✕ '+(data.message||'Unable to save schedule.');
       }
     })
-    .catch(err=>{
+    .catch(function(){
       status.style.color='#b71c1c';
       status.innerText='✕ Unable to connect to admin server.';
     });
 }
-function loadSlotSettings(){
-  var status=document.getElementById('slotSettingsStatus');
-  var password=currentAdminPasswordForSlots();
-  if(!status) return;
-  status.style.color='#6b7280';
-  status.innerText='Loading...';
-
-  fetch(slotSettingsEndpoint()+'?action=getSlotSettings&password='+encodeURIComponent(password))
-    .then(r=>r.json())
-    .then(data=>{
-      if(data.result==='success'){
-        document.getElementById('mondaySlotLimit').value=data.monday;
-        document.getElementById('wednesdaySlotLimit').value=data.wednesday;
-        updateAdminSlotPreview(data.monday,data.wednesday);
-        status.style.color='#155724';
-        status.innerText='Current settings loaded.';
-      }else{
-        status.style.color='#b71c1c';
-        status.innerText='✕ '+(data.message||'Unable to load.');
-      }
-    })
-    .catch(err=>{
-      status.style.color='#b71c1c';
-      status.innerText='✕ Unable to connect to admin server.';
-    });
-}
-</script>
-
-
-<script>
-(function(){
-  function updateSlotGuide(){
-    var el=document.getElementById('dynamicSlotGuide');
-    if(!el || typeof scriptURL==='undefined') return;
-    var monday=30,wednesday=30;
-    Promise.all([
-      fetch(scriptURL+'?action=getSlots&date='+nextWeekdayDate(1)).then(r=>r.json()),
-      fetch(scriptURL+'?action=getSlots&date='+nextWeekdayDate(3)).then(r=>r.json())
-    ]).then(function(res){
-      if(res[0] && res[0].slotLimit) monday=res[0].slotLimit;
-      if(res[1] && res[1].slotLimit) wednesday=res[1].slotLimit;
-      el.innerText='Monday: '+monday+' patients • Wednesday: '+wednesday+' patients.';
-    }).catch(function(){ el.innerText='Monday and Wednesday slot limits apply.'; });
-  }
-  function nextWeekdayDate(day){
-    var d=new Date(), delta=(day-d.getDay()+7)%7;
-    if(delta===0) delta=7;
-    d.setDate(d.getDate()+delta);
-    var y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),dd=String(d.getDate()).padStart(2,'0');
-    return y+'-'+m+'-'+dd;
-  }
-  document.addEventListener('DOMContentLoaded',updateSlotGuide);
-})();
 </script>
 
 
@@ -2052,8 +2163,8 @@ function showAdminPanelSection(section){
     });
     var active={clients:'adminNavClients',slots:'adminNavSlots',announcements:'adminNavAnnouncements'}[section];
     if(active && document.getElementById(active)) document.getElementById(active).classList.add('active');
-    if(section==='slots' && typeof loadSlotSettings==='function'){
-        setTimeout(loadSlotSettings,100);
+    if(section==='slots' && typeof loadScheduleSettings==='function'){
+        setTimeout(loadScheduleSettings,100);
     }
 }
 </script>
