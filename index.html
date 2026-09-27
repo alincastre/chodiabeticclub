@@ -1310,8 +1310,26 @@ document.addEventListener('DOMContentLoaded', function(){
 
 <script>
     const dateInput = document.getElementById('date');
-    const todayStr = new Date().toISOString().split('T')[0];
+
+    // Use the browser's local date (not UTC) for booking limits.
+    function formatLocalDate(date) {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    }
+
+    const today = new Date();
+    const todayStr = formatLocalDate(today);
+
+    // No advanced booking: only today through the next 6 calendar days.
+    // This allows an upcoming appointment such as Monday tomorrow,
+    // but blocks the same weekday in the following week.
+    const maxBookingDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 6);
+    const maxBookingStr = formatLocalDate(maxBookingDate);
+
     dateInput.setAttribute('min', todayStr);
+    dateInput.setAttribute('max', maxBookingStr);
 
     const form = document.getElementById('appointmentForm');
     const submitBtn = document.getElementById('submitBtn');
@@ -1400,6 +1418,26 @@ document.addEventListener('DOMContentLoaded', function(){
         return openDays.indexOf(getTodayDay())!==-1;
     }
 
+    // Extra date-window protection:
+    // booking must be for today or within the next 6 calendar days only.
+    // This prevents selecting the corresponding weekday in the following week.
+    function isWithinBookingWindow(dateStr){
+        if(!dateStr) return false;
+
+        const selectedDate = new Date(dateStr + "T00:00:00");
+        if (isNaN(selectedDate.getTime())) return false;
+
+        const now = new Date();
+        const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const maxDate = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate() + 6
+        );
+
+        return selectedDate >= start && selectedDate <= maxDate;
+    }
+
     function scheduleMessageFor(selectedDay){
         const c=frontpageSchedule && frontpageSchedule[String(selectedDay)];
         if(!c || !c.enabled) return "Walang check-up schedule sa napiling araw.";
@@ -1412,6 +1450,20 @@ document.addEventListener('DOMContentLoaded', function(){
     dateInput.addEventListener('change', function () {
         const selectedDateStr = this.value;
         if (!selectedDateStr || !frontpageSchedule) return;
+
+        // Block advanced booking beyond the next 6 calendar days.
+        if (!isWithinBookingWindow(selectedDateStr)) {
+            messageDiv.style.display = "block";
+            messageDiv.className = "error";
+            messageDiv.innerText = "Advanced booking is not allowed. Please select today or an appointment date within the next 6 days.";
+            document.getElementById('reviewBtn').disabled = true;
+            this.value = "";
+            totalRegisteredEl.innerText = "--";
+            slotsRemainingEl.innerText = "--";
+            dashboardDateText.innerText = "Select an appointment date within the allowed booking window";
+            dashboardCard.classList.remove('warning');
+            return;
+        }
 
         const selectedDate = new Date(selectedDateStr + "T00:00:00");
         const selectedDay = selectedDate.getDay();
@@ -1528,7 +1580,16 @@ document.addEventListener('DOMContentLoaded', function(){
             return;
         }
 
-        document.getElementById('confirmDate').innerText = document.getElementById('date').value;
+        const chosenDate = document.getElementById('date').value;
+        if (!isWithinBookingWindow(chosenDate)) {
+            messageDiv.style.display = "block";
+            messageDiv.className = "error";
+            messageDiv.innerText = "Advanced booking is not allowed. Please choose an appointment date within the next 6 days.";
+            dateInput.focus();
+            return;
+        }
+
+        document.getElementById('confirmDate').innerText = chosenDate;
         document.getElementById('confirmName').innerText = document.getElementById('name').value;
         document.getElementById('confirmOpd').innerText = document.getElementById('opd').value.toUpperCase();
         document.getElementById('confirmType').innerText = document.getElementById('type').value.toUpperCase();
