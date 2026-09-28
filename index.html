@@ -2016,6 +2016,39 @@ body.admin-dashboard-open{overflow:hidden !important;padding:0 !important;}
 let adminLoggedIn = false;
 let adminPasswordForSession = "";
 let allClients = [];
+const ADMIN_SESSION_KEY = "antipolo_admin_session_v1";
+
+function restoreAdminSession() {
+    try {
+        const savedPassword = sessionStorage.getItem(ADMIN_SESSION_KEY) || "";
+        if (!savedPassword) return;
+
+        fetch(`${scriptURL}?action=getClients&password=${encodeURIComponent(savedPassword)}`, {cache: 'no-store'})
+            .then(r => r.json())
+            .then(data => {
+                if (data.result !== 'success') {
+                    sessionStorage.removeItem(ADMIN_SESSION_KEY);
+                    return;
+                }
+
+                adminLoggedIn = true;
+                adminPasswordForSession = savedPassword;
+                document.getElementById('adminDashboardModal').style.display = 'block';
+                document.body.classList.add('admin-dashboard-open');
+                loadAnnouncementAdmin();
+                allClients = data.clients || [];
+                renderClients();
+                if (typeof loadSlotSettings === 'function') {
+                    setTimeout(loadSlotSettings, 100);
+                }
+            })
+            .catch(() => {
+                // Keep the session stored; a temporary network error should not log the admin out.
+            });
+    } catch (err) {
+        // sessionStorage may be unavailable in some browser/privacy modes.
+    }
+}
 
 function openAdminLogin() {
     if (adminLoggedIn) {
@@ -2055,6 +2088,7 @@ function adminLogin() {
             if (data.result === 'success') {
                 adminLoggedIn = true;
                 adminPasswordForSession = password;
+                try { sessionStorage.setItem(ADMIN_SESSION_KEY, password); } catch (err) {}
                 closeAdminLogin();
                 document.getElementById('adminDashboardModal').style.display = 'block';
                 document.body.classList.add('admin-dashboard-open');
@@ -2315,6 +2349,7 @@ function logoutAdmin() {
     adminLoggedIn = false;
     adminPasswordForSession = "";
     allClients = [];
+    try { sessionStorage.removeItem(ADMIN_SESSION_KEY); } catch (err) {}
     document.getElementById('adminDashboardModal').style.display = 'none';
     document.body.classList.remove('admin-dashboard-open');
 }
@@ -2519,6 +2554,12 @@ function saveScheduleSettings(){
 <script>
 document.addEventListener('DOMContentLoaded',function(){
   // Slot settings are loaded after successful admin login.
+});
+
+// Restore the authenticated admin dashboard after a page refresh.
+// The session is intentionally tab/session scoped: closing the tab clears it.
+document.addEventListener('DOMContentLoaded', function(){
+  setTimeout(restoreAdminSession, 0);
 });
 </script>
 
