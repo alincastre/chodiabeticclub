@@ -10,6 +10,12 @@
 
 </script>
     <style>
+        /* Senior-friendly Gender dropdown beside Age */
+        .age-gender-row,.opd-type-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+        .age-gender-row .form-group,.opd-type-row .form-group{margin-bottom:15px}
+        .age-gender-row select,.opd-type-row select{width:100%;height:42px;min-height:42px;padding:10px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;font-size:16px;background:#fff;color:#2c3e50}
+        @media(max-width:520px){.age-gender-row,.opd-type-row{grid-template-columns:1fr;gap:0}}
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f4f7f6;
@@ -36,7 +42,7 @@
             width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px;
             text-transform: capitalize;
         }
-        #opd, #type { text-transform: uppercase; }
+        #opd { text-transform: none; }
         #contact { text-transform: none; }
         textarea { resize: vertical; height: 80px; }
         
@@ -730,7 +736,7 @@ function updateFrontAnnouncement(text){
   if (!el) return;
   el.textContent = (text && String(text).trim())
     ? String(text).trim()
-    : 'No announcement at this time.';
+    : 'Wala po tayong advanced appointment! Kung may katanungan po, maaari po kayong tumawag sa hotline.';
 }
 
 function showAnnouncementPopup(text){
@@ -926,23 +932,214 @@ document.addEventListener('DOMContentLoaded', function(){
 #announcementAdminStatus{min-height:16px}
 #frontAnnouncementText{white-space:pre-line}
 </style>
+<style id="adminFullscreenAndPrintStyles">
+/* Full-screen LGU Admin Workspace */
+#adminModal .admin-panel,
+#adminModal .admin-container,
+#adminModal .admin-dashboard,
+.admin-panel.admin-fullscreen {
+  width:100% !important;
+  max-width:none !important;
+}
+#adminDashboardModal {
+  position:fixed !important;
+  inset:0 !important;
+  z-index:99999 !important;
+  width:100vw !important;
+  height:100vh !important;
+  padding:0 !important;
+  margin:0 !important;
+  background:#f3f7fc !important;
+}
+#adminModal > * {
+  max-width:none !important;
+}
+#adminDashboardModal .admin-panel {
+  min-height:100vh !important;
+  height:100vh !important;
+  box-sizing:border-box !important;
+  margin:0 !important;
+  border-radius:0 !important;
+  overflow:auto !important;
+  background:#f5f8fc !important;
+}
+#adminDashboardModal .admin-head {
+  position:sticky;
+  top:0;
+  z-index:5;
+  background:linear-gradient(135deg,#0c3d80,#155cae) !important;
+  color:#fff !important;
+  padding:16px 22px !important;
+  margin:0 !important;
+}
+#adminDashboardModal .admin-head h3 {color:#fff !important}
+#adminDashboardModal .admin-menu-final {position:sticky;top:72px;z-index:4;background:#f5f8fc;padding:10px 0 8px;margin:0 0 10px}
+#adminDashboardModal .admin-panel-section {max-width:1400px;margin:0 auto;padding:0 18px 24px}
+#adminDashboardModal .admin-menu-btn {font-size:11px;padding:10px 8px}
+.admin-print-tools{display:flex;gap:6px;align-items:center;margin:6px 0 9px}
+.admin-print-tools input{width:145px;border:1px solid #c8d5e5;border-radius:7px;padding:6px 8px;background:#fff;color:#19385f;font-size:12px;box-sizing:border-box}
+.admin-print-btn{width:auto;border:0;border-radius:7px;padding:6px 10px;font-size:12px;font-weight:800;cursor:pointer;color:#fff;background:#0d4fa7;white-space:nowrap}
+@media(max-width:700px){
+  #adminDashboardModal .admin-head{padding:13px 14px !important}
+  #adminDashboardModal .admin-menu-final{top:62px;padding:8px 8px}
+  #adminDashboardModal .admin-panel-section{padding:0 10px 20px}
+}
+body.admin-dashboard-open{overflow:hidden !important;padding:0 !important;}
+#adminDashboardModal{padding:0 !important;margin:0 !important;background:#f5f8fc !important;}
+#adminDashboardModal .admin-panel{position:absolute !important;inset:0 !important;}
+#adminDashboardModal .admin-panel{width:100vw !important;max-width:none !important;height:100vh !important;min-height:100vh !important;margin:0 !important;border-radius:0 !important;box-shadow:none !important;overflow:auto !important;}
+#adminDashboardModal .admin-menu-final{padding-left:18px !important;padding-right:18px !important;}
+@page{size:A4 portrait;margin:6mm;}
+@media print{
+  html,body{margin:0 !important;padding:0 !important;background:#fff !important;}
+  body *{visibility:hidden !important}
+  #adminPrintArea,#adminPrintArea *{visibility:visible !important}
+  #adminPrintArea{position:absolute !important;left:0 !important;top:0 !important;width:100% !important;background:#fff !important;margin:0 !important;padding:0 !important;}
+  #adminPrintArea .print-page{width:100% !important;box-sizing:border-box !important;page-break-after:always !important;break-after:page !important;}
+  #adminPrintArea .print-page:last-child{page-break-after:auto !important;break-after:auto !important;}
+  #adminPrintArea table{width:100% !important;border-collapse:collapse !important;table-layout:fixed !important;}
+  #adminPrintArea tr{page-break-inside:avoid !important;break-inside:avoid !important;}
+  .no-print{display:none !important}
+}
+</style>
+
+<style id="monthlyReportsStyles">
+.reports-pro{background:#f7faff;border:1px solid #d8e5f5;border-radius:18px;padding:20px;margin:12px 0;color:#18375f;box-shadow:0 8px 25px rgba(19,59,128,.07)}
+.reports-pro-head{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;padding-bottom:18px;border-bottom:1px solid #e4ebf5}
+.reports-kicker{font-size:10px;font-weight:900;letter-spacing:1.6px;color:#c51f2a;margin-bottom:4px}
+.reports-pro h3{font-size:22px;margin:0 0 5px;color:#0d3e83}
+.reports-pro-head p{font-size:12px;color:#687b94;margin:0}
+.reports-refresh-pro{border:0;background:linear-gradient(135deg,#0d4fa7,#1478d4);color:#fff;border-radius:10px;padding:11px 16px;font-weight:800;cursor:pointer;box-shadow:0 5px 12px rgba(13,79,167,.18)}
+.reports-filter-pro{display:flex;gap:12px;align-items:end;flex-wrap:wrap;margin:17px 0 8px}
+.reports-filter-pro>div{min-width:150px}
+.reports-filter-pro label{display:block;font-size:9px;font-weight:900;letter-spacing:1px;color:#657994;margin-bottom:6px}
+.reports-filter-pro select{width:100%;box-sizing:border-box;padding:10px 11px;border:1px solid #bdcce0;border-radius:9px;background:#fff;color:#17385f;font-weight:700}
+.reports-status{font-size:11px;color:#64748b;min-height:18px;margin:4px 0 12px}
+.reports-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:12px 0}
+.reports-kpi{border-radius:14px;padding:17px;color:#fff;min-height:92px;box-sizing:border-box}
+.reports-kpi span{font-size:9px;font-weight:900;letter-spacing:1px;opacity:.9}
+.reports-kpi strong{display:block;font-size:34px;line-height:1;margin:9px 0 5px}
+.reports-kpi small{font-size:10px;opacity:.9}
+.reports-kpi-blue{background:linear-gradient(135deg,#0b4ea2,#2188df)}
+.reports-kpi-red{background:linear-gradient(135deg,#b71928,#e03b48)}
+.reports-kpi-dark{background:linear-gradient(135deg,#16365f,#275b8e)}
+.reports-chart-card,.reports-table-card{background:#fff;border:1px solid #dce6f2;border-radius:14px;padding:17px;margin-top:13px}
+.reports-section-title{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.reports-section-title h4{font-size:15px;color:#123f7e;margin:0 0 3px}
+.reports-section-title span{font-size:10px;color:#7a8ba1}
+.reports-legend{font-size:10px;color:#657994;display:flex;align-items:center;gap:6px}
+.reports-legend i{display:inline-block;width:9px;height:9px;border-radius:50%;background:#176ac1}
+.monthly-bar-chart{height:220px;display:flex;align-items:end;gap:7px;padding:22px 4px 4px;box-sizing:border-box}
+.month-bar-col{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:end}
+.month-bar-value{font-size:9px;font-weight:900;color:#244d7d;margin-bottom:5px}
+.month-bar-track{width:100%;height:145px;display:flex;align-items:end;justify-content:center;background:linear-gradient(to top,#f5f8fc,#fff);border-radius:7px 7px 2px 2px}
+.month-bar{width:65%;max-width:32px;min-height:3px;background:linear-gradient(to top,#0d4fa7,#3294df);border-radius:6px 6px 2px 2px;transition:height .3s}
+.month-bar-col.selected .month-bar{background:linear-gradient(to top,#c71d2b,#f04a57)}
+.month-bar-col.selected .month-bar-label{color:#bd1e2c;font-weight:900}
+.month-bar-label{font-size:8px;color:#687b94;margin-top:7px;text-align:center;white-space:nowrap}
+.report-table{width:100%;border-collapse:collapse;font-size:12px}
+.report-table th{text-align:left;background:#103e7f;color:#fff;padding:10px}
+.report-table th:last-child,.report-table td:last-child{text-align:right}
+.report-table td{padding:10px;border-bottom:1px solid #e6edf6}
+.report-table tr.selected{background:#eef6ff;font-weight:900}
+.report-note{font-size:10px;color:#74859a;line-height:1.6;margin:13px 0 0}
+@media(max-width:600px){.reports-pro{padding:13px}.reports-kpis{grid-template-columns:1fr}.monthly-bar-chart{gap:3px}.month-bar{width:70%}.month-bar-label{font-size:7px}.reports-chart-card,.reports-table-card{padding:12px}}
+</style>
+
+<style id="frontSimpleEnhancements">
+.front-brand-logos{display:flex;justify-content:center;align-items:center;gap:8px;margin-bottom:8px}
+.front-brand-logos img{border-radius:50%;object-fit:contain;background:#fff;border:2px solid #e5edf6;box-shadow:0 3px 10px rgba(21,73,128,.10)}
+.front-med-badge{display:inline-flex;align-items:center;gap:7px;padding:5px 10px;border-radius:999px;background:#eef6ff;border:1px solid #cfe1f5;color:#14549b;font-size:10px;font-weight:900;letter-spacing:.8px}
+.front-med-icon{width:18px;height:18px;border-radius:50%;background:#d51f2d;display:inline-block;position:relative;box-shadow:0 2px 6px rgba(213,31,45,.22)}
+.front-med-icon:before,.front-med-icon:after{content:"";position:absolute;background:#fff;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:2px}
+.front-med-icon:before{width:10px;height:3px}
+.front-med-icon:after{width:3px;height:10px}
+.front-announcement-alert{margin:12px auto 16px;max-width:720px;padding:11px 14px;border:1px solid #f0b8be;border-left:5px solid #c9182b;border-radius:10px;background:#fff1f2;color:#b0192a;text-align:center;box-sizing:border-box;box-shadow:0 4px 12px rgba(201,24,43,.07)}
+.front-announcement-title{font-size:11px;font-weight:900;letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px;color:#c9182b}
+#frontAnnouncementText{font-size:13px;line-height:1.5;font-weight:800;color:#a81828;white-space:pre-line}
+</style>
+
+<style id="seniorFriendlyFrontV2">
+/* Senior-friendly front page refinements */
+.front-hotline-card{
+  max-width:720px;
+  margin:10px auto 14px;
+  padding:10px 14px;
+  border:1px solid #d7e3ef;
+  border-left:5px solid #0b5fc7;
+  border-radius:11px;
+  background:#f7fbff;
+  box-shadow:0 4px 12px rgba(11,95,199,.06);
+  text-align:center;
+}
+.front-hotline-title{
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.8px;
+  color:#0b5fc7;
+  text-transform:uppercase;
+  margin-bottom:4px;
+}
+.front-hotline-numbers{
+  color:#173d68;
+  font-size:14px;
+  font-weight:900;
+  line-height:1.45;
+}
+.front-hotline-numbers a{color:inherit;text-decoration:none}
+.form-group label{display:flex;align-items:center;gap:7px}
+.field-icon{
+  width:25px;
+  height:25px;
+  min-width:25px;
+  border-radius:8px;
+  display:inline-grid;
+  place-items:center;
+  background:#edf5ff;
+  border:1px solid #cfe0f6;
+  color:#0b5fc7;
+  font-size:14px;
+  line-height:1;
+}
+.age-gender-row .field-icon{background:#fff3f4;border-color:#f3c7cc;color:#c9182b}
+@media(max-width:520px){
+  .front-hotline-numbers{font-size:13px}
+}
+</style>
+
+<style id="fieldReqStyle">.req-mark{color:#c9182b;font-weight:900;font-size:13px;margin-left:1px}</style>
 </head>
 <body>
 <button id="adminGearBtn" type="button" onclick="openAdminLogin()" title="Admin Login">⚙️</button>
 <div class="form-container">
     <center>
-        <img src="https://www.image2url.com/r2/default/images/1782022944770-7a8e4b4c-a5a6-4f1b-b164-aa1d514db85e.png" alt="Company Logo" width="50"> 
-        <img src="https://www.image2url.com/r2/default/images/1782022901500-ad384d18-f457-4dfe-8fe2-aa6500d3d910.png" alt="Company Logo" width="50">
+        <div class="front-brand-logos">
+            <img src="https://www.image2url.com/r2/default/images/1782022944770-7a8e4b4c-a5a6-4f1b-b164-aa1d514db85e.png" alt="Company Logo" width="50"> 
+            <img src="https://www.image2url.com/r2/default/images/1782022901500-ad384d18-f457-4dfe-8fe2-aa6500d3d910.png" alt="Company Logo" width="50">
+        </div>
+        <div class="front-med-badge" aria-label="Online Registration">
+            <span class="front-med-icon" aria-hidden="true"><span></span></span>
+            <span>ONLINE REGISTRATION</span>
+        </div>
     </center>
-    <h2><strong>Antipolo City Health Office</strong></h2>
-    <center><p><strong>Dr. Alvin L. Yalung</strong></p></center>
-    <center><p><strong>Hotline : ☎ 09165344707 / 8697-0362 / 8689-4518 / 8689-4097</strong></p></center>
+    <h2><strong>ANTIPOLO CITY HEALTH OFFICE</strong></h2>
     <center>
-        <p id="frontAnnouncementLabel" style="margin-bottom: 5px;"><strong>📢 ANNOUNCEMENT!</strong></p>
-        <p id="frontAnnouncementText" style="margin:0 auto 15px;max-width:700px;color:#596873;font-size:13px;line-height:1.5;">
-            No announcement at this time.
-        </p>
+        <p><strong>Dr. Alvin L. Yalung</strong></p>
+        <p><em>Out-Patient Department (OPD) • Online Registration System</em></p>
     </center>
+    <div class="front-hotline-card" aria-label="Antipolo City Health Office hotline numbers">
+        <div class="front-hotline-title">☎ Hotline Assistance</div>
+        <div class="front-hotline-numbers">
+            <a href="tel:09165344707">0916 534 4707</a> &nbsp;•&nbsp;
+            <a href="tel:86970362">8697-0362</a> &nbsp;•&nbsp;
+            <a href="tel:86894518">8689-4518</a> &nbsp;•&nbsp;
+            <a href="tel:86894097">8689-4097</a>
+        </div>
+    </div>
+    <div class="front-announcement-alert" role="alert">
+        <div class="front-announcement-title" id="frontAnnouncementLabel">⚠️ ANNOUNCEMENT</div>
+        <div id="frontAnnouncementText">Wala po tayong advanced appointment! Kung may katanungan po, maaari po kayong tumawag sa hotline.</div>
+    </div>
 
     <!-- INTERACTIVE SCHEDULE GUIDE ACCORDION -->
     <div class="guide-accordion">
@@ -973,37 +1170,53 @@ document.addEventListener('DOMContentLoaded', function(){
     <!-- MAIN FORM -->
     <form id="appointmentForm">
         <div class="form-group">
-            <label for="date">Preferred Date</label>
+            <label for="date"><span class="field-icon" aria-hidden="true">📅</span> Preferred Date <span class="req-mark">*</span></label>
             <input type="date" id="date" name="date" required>
         </div>
 
-        <div class="form-group">
-            <label for="opd">OPD Number</label>
-            <input type="text" id="opd" name="opd" placeholder="Enter OPD Number / N/A for New" required>
+        <div class="opd-type-row">
+            <div class="form-group">
+                <label for="opd"><span class="field-icon" aria-hidden="true">🏥</span> OPD Number <span class="req-mark">*</span></label>
+                <input type="text" id="opd" name="opd" placeholder="OPD Number / None" required>
+            </div>
+
+            <div class="form-group">
+                <label for="type"><span class="field-icon" aria-hidden="true">👤</span> New / Old Patient <span class="req-mark">*</span></label>
+                <select id="type" name="type" required>
+                    <option value="">Select Patient Type</option>
+                    <option value="New">New Patient</option>
+                    <option value="Old">Old Patient</option>
+                </select>
+            </div>
         </div>
 
         <div class="form-group">
-            <label for="type">New / Old Patient</label>
-            <input type="text" id="type" name="type" placeholder="Enter OLD or NEW" required>
-        </div>
-
-        <div class="form-group">
-            <label for="name">Patient Full Name</label>
+            <label for="name"><span class="field-icon" aria-hidden="true">🪪</span> Patient Full Name <span class="req-mark">*</span></label>
             <input type="text" id="name" name="name" placeholder="Juan Dela Cruz" required>
         </div>
 
-        <div class="form-group">
-            <label for="age">Age</label>
-            <input type="number" id="age" name="age" min="0" max="120" placeholder="30" required>
+        <div class="age-gender-row">
+            <div class="form-group">
+                <label for="age"><span class="field-icon" aria-hidden="true">🎂</span> Age <span class="req-mark">*</span></label>
+                <input type="number" id="age" name="age" min="0" max="120" placeholder="30" required>
+            </div>
+            <div class="form-group">
+                <label for="gender"><span class="field-icon" aria-hidden="true">⚥</span> Gender <span class="req-mark">*</span></label>
+                <select id="gender" name="gender" required>
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+            </div>
         </div>
 
         <div class="form-group">
-            <label for="address">Address</label>
+            <label for="address"><span class="field-icon" aria-hidden="true">📍</span> Address <span class="req-mark">*</span></label>
             <textarea id="address" name="address" placeholder="123 Street, Antipolo City" required></textarea>
         </div>
 
         <div class="form-group">
-            <label for="contact">Contact Number</label>
+            <label for="contact"><span class="field-icon" aria-hidden="true">☎</span> Contact Number <span class="req-mark">*</span></label>
             <input type="text" id="contact" name="contact" placeholder="09XX-XXX-XXXX" maxlength="13" required>
         </div>
 
@@ -1028,6 +1241,7 @@ document.addEventListener('DOMContentLoaded', function(){
         <div class="slip-row"><span class="slip-label">Appointment Date:</span><span id="slipDate">--</span></div>
         <div class="slip-row"><span class="slip-label">Patient Name:</span><span id="slipName">--</span></div>
         <div class="slip-row"><span class="slip-label">OPD Number:</span><span id="slipOpd">--</span></div>
+        <div class="slip-row"><span class="slip-label">Gender:</span><span id="slipGender">--</span></div>
         <div class="slip-row"><span class="slip-label">Doctor:</span><span>Dr. Alvin L. Yalung</span></div>
         <p style="font-size:11px; color:#888; text-align:center; margin-top:15px;">Please screenshot or save this slip as image upon check-up.</p>
         <div class="slip-action-btns">
@@ -1037,7 +1251,7 @@ document.addEventListener('DOMContentLoaded', function(){
     </div>
 
     <div class="footer">
-        Antipolo City Health Office Diabetic Club<br> Coded by: Erwin R. Alincastre. All Rights Reserved.
+        © 2026 • Developed &amp; Maintained by Erwin R. Alincastre
     </div>
 </div>
 
@@ -1096,6 +1310,8 @@ document.addEventListener('DOMContentLoaded', function(){
                     onclick="showAdminPanelSection('slots')">⚙️ Slot Settings</button>
             <button type="button" class="admin-menu-btn" id="adminNavAnnouncements"
                     onclick="showAdminPanelSection('announcements')">📢 Announcements</button>
+            <button type="button" class="admin-menu-btn" id="adminNavReports"
+                    onclick="showAdminPanelSection('reports')">📈 Reports</button>
         </div>
 
         <div id="adminPanelClients" class="admin-panel-section active">
@@ -1122,7 +1338,11 @@ document.addEventListener('DOMContentLoaded', function(){
         <!-- ================= ANNOUNCEMENT ================= -->
         
 
-        <div class="admin-tools">
+        <div class="admin-print-tools no-print">
+  <input type="date" id="adminReportDate" title="Appointment date">
+  <button type="button" class="admin-print-btn" onclick="printRegisteredDay()">🖨️ Print Day</button>
+</div>
+<div class="admin-tools">
             <input type="text" id="clientSearch" placeholder="🔎 Search name / OPD / contact">
             <input type="date" id="clientDateFilter">
             <button type="button" class="admin-action" onclick="loadClients()">🔄 Refresh</button>
@@ -1141,6 +1361,7 @@ document.addEventListener('DOMContentLoaded', function(){
                         <th>Type</th>
                         <th>Name</th>
                         <th>Age</th>
+                        <th>Gender</th>
                         <th>Address</th>
                         <th>Contact</th>
                         <th>Timestamp</th>
@@ -1148,7 +1369,7 @@ document.addEventListener('DOMContentLoaded', function(){
                     </tr>
                 </thead>
                 <tbody id="clientTableBody">
-                    <tr><td colspan="9" style="text-align:center;">No records loaded.</td></tr>
+                    <tr><td colspan="10" style="text-align:center;">No records loaded.</td></tr>
                 </tbody>
             </table>
         </div>
@@ -1212,6 +1433,84 @@ document.addEventListener('DOMContentLoaded', function(){
 
 
         </div>
+
+<div id="adminPanelReports" class="admin-panel-section">
+  <div class="reports-pro">
+    <div class="reports-pro-head">
+      <div>
+        <div class="reports-kicker">ADMIN ANALYTICS</div>
+        <h3>📊 Check-up Reports</h3>
+        <p>Monthly appointment volume based on the scheduled check-up date.</p>
+      </div>
+      <button type="button" class="reports-refresh-pro" onclick="refreshMonthlyReports()">↻ Refresh Data</button>
+    </div>
+
+    <div class="reports-filter-pro">
+      <div>
+        <label for="reportYear">YEAR</label>
+        <select id="reportYear" onchange="renderMonthlyReports()"></select>
+      </div>
+      <div>
+        <label for="reportMonth">FOCUS MONTH</label>
+        <select id="reportMonth" onchange="renderMonthlyReports()">
+          <option value="0">January</option><option value="1">February</option>
+          <option value="2">March</option><option value="3">April</option>
+          <option value="4">May</option><option value="5">June</option>
+          <option value="6">July</option><option value="7">August</option>
+          <option value="8">September</option><option value="9">October</option>
+          <option value="10">November</option><option value="11">December</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="reportStatus" class="reports-status" role="status" aria-live="polite">Select Reports to load data.</div>
+
+    <div class="reports-kpis">
+      <div class="reports-kpi reports-kpi-blue">
+        <span>SELECTED MONTH</span>
+        <strong id="reportMonthTotal">—</strong>
+        <small id="reportMonthLabel">Check-ups</small>
+      </div>
+      <div class="reports-kpi reports-kpi-red">
+        <span>YEAR TOTAL</span>
+        <strong id="reportYearTotal">—</strong>
+        <small>Registered check-ups</small>
+      </div>
+      <div class="reports-kpi reports-kpi-dark">
+        <span>ALL RECORDS</span>
+        <strong id="reportAllTotal">—</strong>
+        <small>Current Google Sheet records</small>
+      </div>
+    </div>
+
+    <div class="reports-chart-card">
+      <div class="reports-section-title">
+        <div>
+          <h4>Monthly Check-up Volume</h4>
+          <span id="reportChartSubtitle">Appointments by month</span>
+        </div>
+        <div class="reports-legend"><i></i> Registered appointments</div>
+      </div>
+      <div id="monthlyBarChart" class="monthly-bar-chart"></div>
+    </div>
+
+    <div class="reports-table-card">
+      <div class="reports-section-title">
+        <div>
+          <h4>Monthly Breakdown</h4>
+          <span>Detailed count for the selected year</span>
+        </div>
+      </div>
+      <div class="report-table-wrap">
+        <table class="report-table">
+          <thead><tr><th>Month</th><th>Registered Check-ups</th></tr></thead>
+          <tbody id="reportMonthlyRows"></tbody>
+        </table>
+      </div>
+      <p class="report-note">Counts are based on appointment/check-up dates stored in the Google Sheet. Deleted rows are excluded after refreshing the report.</p>
+    </div>
+  </div>
+</div>
 
 <div id="adminPanelAnnouncements" class="admin-panel-section">
   <div class="announcement-admin-card"
@@ -1298,6 +1597,7 @@ document.addEventListener('DOMContentLoaded', function(){
             <p><strong>OPD Number:</strong> <span id="confirmOpd">--</span></p>
             <p><strong>Patient Type:</strong> <span id="confirmType">--</span></p>
             <p><strong>Age:</strong> <span id="confirmAge">--</span></p>
+            <p><strong>Gender:</strong> <span id="confirmGender">--</span></p>
             <p><strong>Contact:</strong> <span id="confirmContact">--</span></p>
             <p><strong>Address:</strong> <span id="confirmAddress">--</span></p>
         </div>
@@ -1594,6 +1894,7 @@ document.addEventListener('DOMContentLoaded', function(){
         document.getElementById('confirmOpd').innerText = document.getElementById('opd').value.toUpperCase();
         document.getElementById('confirmType').innerText = document.getElementById('type').value.toUpperCase();
         document.getElementById('confirmAge').innerText = document.getElementById('age').value;
+        document.getElementById('confirmGender').innerText = document.getElementById('gender').value || '--';
         document.getElementById('confirmContact').innerText = document.getElementById('contact').value;
         document.getElementById('confirmAddress').innerText = document.getElementById('address').value;
 
@@ -1648,6 +1949,7 @@ document.addEventListener('DOMContentLoaded', function(){
                 document.getElementById('slipDate').innerText = document.getElementById('date').value;
                 document.getElementById('slipName').innerText = document.getElementById('name').value;
                 document.getElementById('slipOpd').innerText = document.getElementById('opd').value.toUpperCase();
+                document.getElementById('slipGender').innerText = document.getElementById('gender').value || '--';
                 
                 const slipElement = document.getElementById('appointmentSlip');
                 slipElement.style.display = "block";
@@ -1718,6 +2020,7 @@ let allClients = [];
 function openAdminLogin() {
     if (adminLoggedIn) {
         document.getElementById('adminDashboardModal').style.display = 'block';
+        document.body.classList.add('admin-dashboard-open');
         loadAnnouncementAdmin();
         loadClients();
         return;
@@ -1754,6 +2057,7 @@ function adminLogin() {
                 adminPasswordForSession = password;
                 closeAdminLogin();
                 document.getElementById('adminDashboardModal').style.display = 'block';
+                document.body.classList.add('admin-dashboard-open');
                 loadAnnouncementAdmin();
                 allClients = data.clients || [];
                 renderClients();
@@ -1815,7 +2119,7 @@ function renderClients() {
     if (sOld) sOld.innerText = allClients.filter(c => String(c.type).toUpperCase() === 'OLD').length;
 
     const filtered = allClients.filter(c => {
-        const text = [c.name,c.opd,c.contact,c.type,c.address,c.age].join(' ').toLowerCase();
+        const text = [c.name,c.opd,c.contact,c.type,c.address,c.age,c.gender].join(' ').toLowerCase();
         return (!search || text.includes(search)) && (!date || c.date === date);
     });
 
@@ -1824,7 +2128,7 @@ function renderClients() {
         `Showing ${filtered.length} of ${allClients.length} client(s)`;
 
     if (!filtered.length) {
-        body.innerHTML = '<tr><td colspan="9" style="text-align:center;">No matching records.</td></tr>';
+        body.innerHTML = '<tr><td colspan="10" style="text-align:center;">No matching records.</td></tr>';
         return;
     }
 
@@ -1835,6 +2139,7 @@ function renderClients() {
             <td><span class="type-badge">${escapeAdminHtml(c.type)}</span></td>
             <td><strong>${escapeAdminHtml(c.name)}</strong></td>
             <td>${escapeAdminHtml(c.age)}</td>
+            <td>${escapeAdminHtml(c.gender)}</td>
             <td>${escapeAdminHtml(c.address)}</td>
             <td>${escapeAdminHtml(c.contact)}</td>
             <td>${escapeAdminHtml(c.timestamp)}</td>
@@ -1860,6 +2165,13 @@ function editClient(rowNumber) {
         <td><input class="edit-row-input" type="text" id="edit-type-${rowNumber}" value="${escapeAdminHtml(client.type)}"></td>
         <td><input class="edit-row-input" type="text" id="edit-name-${rowNumber}" value="${escapeAdminHtml(client.name)}"></td>
         <td><input class="edit-row-input" type="number" id="edit-age-${rowNumber}" value="${escapeAdminHtml(client.age)}"></td>
+        <td>
+            <select class="edit-row-input" id="edit-gender-${rowNumber}">
+                <option value="" ${String(client.gender||'')===''?'selected':''}>Select</option>
+                <option value="Male" ${String(client.gender||'')==='Male'?'selected':''}>Male</option>
+                <option value="Female" ${String(client.gender||'')==='Female'?'selected':''}>Female</option>
+            </select>
+        </td>
         <td><input class="edit-row-input" type="text" id="edit-address-${rowNumber}" value="${escapeAdminHtml(client.address)}"></td>
         <td><input class="edit-row-input" type="text" id="edit-contact-${rowNumber}" value="${escapeAdminHtml(client.contact)}"></td>
         <td>${escapeAdminHtml(client.timestamp)}</td>
@@ -1882,6 +2194,7 @@ function saveClient(rowNumber) {
         type: document.getElementById(`edit-type-${rowNumber}`).value,
         name: document.getElementById(`edit-name-${rowNumber}`).value,
         age: document.getElementById(`edit-age-${rowNumber}`).value,
+        gender: document.getElementById(`edit-gender-${rowNumber}`).value,
         address: document.getElementById(`edit-address-${rowNumber}`).value,
         contact: document.getElementById(`edit-contact-${rowNumber}`).value
     });
@@ -1954,6 +2267,7 @@ function viewClient(rowNumber) {
         <div class="patient-detail-item"><div class="patient-detail-label">Type</div><div class="patient-detail-value">${escapeAdminHtml(client.type)}</div></div>
         <div class="patient-detail-item"><div class="patient-detail-label">Name</div><div class="patient-detail-value">${escapeAdminHtml(client.name)}</div></div>
         <div class="patient-detail-item"><div class="patient-detail-label">Age</div><div class="patient-detail-value">${escapeAdminHtml(client.age)}</div></div>
+        <div class="patient-detail-item"><div class="patient-detail-label">Gender</div><div class="patient-detail-value">${escapeAdminHtml(client.gender)}</div></div>
         <div class="patient-detail-item"><div class="patient-detail-label">Contact</div><div class="patient-detail-value">${escapeAdminHtml(client.contact)}</div></div>
         <div class="patient-detail-item" style="grid-column:1/-1;"><div class="patient-detail-label">Address</div><div class="patient-detail-value">${escapeAdminHtml(client.address)}</div></div>
         <div class="patient-detail-item" style="grid-column:1/-1;"><div class="patient-detail-label">Registered Timestamp</div><div class="patient-detail-value">${escapeAdminHtml(client.timestamp)}</div></div>
@@ -2002,6 +2316,7 @@ function logoutAdmin() {
     adminPasswordForSession = "";
     allClients = [];
     document.getElementById('adminDashboardModal').style.display = 'none';
+    document.body.classList.remove('admin-dashboard-open');
 }
 
 function changeAdminPassword() {
@@ -2208,27 +2523,222 @@ document.addEventListener('DOMContentLoaded',function(){
 </script>
 
 
+<script id="dailyPrintExportScript">
+(function(){
+  function esc(v){
+    return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function normalizeDate(v){
+    var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(v||''));
+    return m ? String(v) : '';
+  }
+  function isoDate(d){
+    return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  }
+  function getSchedule(){
+    return window.frontpageSchedule || (typeof frontpageSchedule!=='undefined' ? frontpageSchedule : null);
+  }
+  function getNextScheduledDate(){
+    var schedule=getSchedule(), now=new Date();
+    now.setHours(0,0,0,0);
+    if(!schedule) return '';
+    for(var add=0; add<=14; add++){
+      var d=new Date(now);
+      d.setDate(now.getDate()+add);
+      var cfg=schedule[String(d.getDay())];
+      if(cfg && cfg.enabled) return isoDate(d);
+    }
+    return '';
+  }
+  function getSelectedAdminDate(){
+    var el=document.getElementById('adminReportDate');
+    return (el && el.value) ? el.value : getNextScheduledDate();
+  }
+  function getDayClients(date){
+    return (allClients||[]).filter(function(c){return normalizeDate(c.date)===date;});
+  }
+  function displayDate(date){
+    var p=String(date||'').split('-');
+    return p.length===3 ? p[1]+'/'+p[2]+'/'+p[0] : date;
+  }
+
+  function syncPrintDate(){
+    var r=document.getElementById('adminReportDate');
+    if(!r) return;
+    var next=getNextScheduledDate();
+    if(next) r.value=next;
+  }
+
+  window.syncAdminPrintDate=syncPrintDate;
+
+  window.printRegisteredDay=function(){
+    var date=getSelectedAdminDate();
+    if(!date){
+      alert('Walang available na scheduled check-up day.');
+      return;
+    }
+
+    var rows=getDayClients(date);
+    var area=document.getElementById('adminPrintArea');
+    if(!area){
+      alert('Print area is not available. Please refresh the page.');
+      return;
+    }
+
+    // Target: 30 patients = 1 page. 40+ patients = 2+ pages.
+    // We split at 39 so the print is predictable instead of depending on browser auto-flow.
+    var pageSize=39;
+    var pages=[];
+    if(rows.length===0){
+      pages=[[]];
+    }else{
+      for(var p=0;p<rows.length;p+=pageSize){
+        pages.push(rows.slice(p,p+pageSize));
+      }
+    }
+
+    var html='';
+    pages.forEach(function(pageRows,pageIndex){
+      html+='<div class="print-page" style="font-family:Arial,sans-serif;color:#182b44;padding:0;">'+
+        '<div style="border-bottom:1.5px solid #123f7e;padding:0 0 5px;margin:0 0 5px;">'+
+        '<div style="font-size:8px;font-weight:700;color:#b51f2b;letter-spacing:.6px;">ANTIPOLO CITY HEALTH OFFICE</div>'+
+        '<div style="font-size:14px;font-weight:800;color:#123f7e;line-height:1.15;margin-top:2px;">Registered Patients — '+esc(displayDate(date))+'</div>'+
+        '<div style="font-size:8px;color:#64748b;margin-top:2px;">Total registered: <strong>'+rows.length+'</strong>'+(pages.length>1?' • Page '+(pageIndex+1)+' of '+pages.length:'')+'</div></div>'+
+        '<table><thead><tr style="background:#123f7e;color:#fff;">'+
+        '<th style="width:7%;padding:3px 4px;text-align:left;font-size:8px;">#</th>'+
+        '<th style="width:34%;padding:3px 4px;text-align:left;font-size:8px;">Name</th>'+
+        '<th style="width:18%;padding:3px 4px;text-align:left;font-size:8px;">OPD</th>'+
+        '<th style="width:13%;padding:3px 4px;text-align:left;font-size:8px;">Type</th>'+
+        '<th style="width:7%;padding:3px 4px;text-align:left;font-size:8px;">Age</th>'+
+        '<th style="width:10%;padding:3px 4px;text-align:left;font-size:8px;">Gender</th>'+
+        '<th style="width:17%;padding:3px 4px;text-align:left;font-size:8px;">Contact</th></tr></thead><tbody>';
+
+      if(!pageRows.length){
+        html+='<tr><td colspan="6" style="padding:6px;text-align:center;color:#64748b;font-size:9px;">No registered patients for this date.</td></tr>';
+      }else{
+        pageRows.forEach(function(c,i){
+          var absoluteIndex=(pageIndex*pageSize)+i+1;
+          html+='<tr>'+
+            '<td style="padding:2.5px 4px;border-bottom:1px solid #dfe4ea;font-size:8px;line-height:1.15;vertical-align:middle;">'+absoluteIndex+'</td>'+
+            '<td style="padding:2.5px 4px;border-bottom:1px solid #dfe4ea;font-size:8px;line-height:1.15;vertical-align:middle;word-break:break-word;">'+esc(c.name)+'</td>'+
+            '<td style="padding:2.5px 4px;border-bottom:1px solid #dfe4ea;font-size:8px;line-height:1.15;vertical-align:middle;">'+esc(c.opd)+'</td>'+
+            '<td style="padding:2.5px 4px;border-bottom:1px solid #dfe4ea;font-size:8px;line-height:1.15;vertical-align:middle;">'+esc(c.type)+'</td>'+
+            '<td style="padding:2.5px 4px;border-bottom:1px solid #dfe4ea;font-size:8px;line-height:1.15;vertical-align:middle;">'+esc(c.age)+'</td>'+
+            '<td style="padding:2.5px 4px;border-bottom:1px solid #dfe4ea;font-size:8px;line-height:1.15;vertical-align:middle;">'+esc(c.gender)+'</td>'+
+            '<td style="padding:2.5px 4px;border-bottom:1px solid #dfe4ea;font-size:8px;line-height:1.15;vertical-align:middle;">'+esc(c.contact)+'</td>'+
+          '</tr>';
+        });
+      }
+
+      html+='</tbody></table>'+
+        '<div style="margin-top:5px;font-size:7px;color:#64748b;">Generated: '+new Date().toLocaleString()+'</div>'+
+      '</div>';
+    });
+
+    area.innerHTML=html;
+    area.style.display='block';
+
+    // Let the browser finish layout before opening print preview.
+    setTimeout(function(){
+      window.print();
+      setTimeout(function(){area.style.display='none';area.innerHTML='';},500);
+    },50);
+  };
+
+  document.addEventListener('DOMContentLoaded',function(){
+    var r=document.getElementById('adminReportDate');
+    if(r){ r.addEventListener('change',function(){
+      var f=document.getElementById('clientDateFilter');
+      if(f) f.value=r.value;
+      if(typeof loadClients==='function') loadClients();
+    }); }
+    setTimeout(syncPrintDate,1200);
+    setTimeout(syncPrintDate,2500);
+  });
+})();
+</script>
+<script id="monthlyReportsScript">
+(function(){
+  var names=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  window.renderMonthlyReports=function(){
+    var yearEl=document.getElementById('reportYear'),monthEl=document.getElementById('reportMonth');
+    if(!yearEl||!yearEl.value||!monthEl)return;
+    var year=Number(yearEl.value),month=Number(monthEl.value),counts=Array(12).fill(0),yearTotal=0;
+    (allClients||[]).forEach(function(c){
+      var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(c.date||''));
+      if(!m)return;
+      var y=Number(m[1]),mo=Number(m[2])-1;
+      if(y===year&&mo>=0&&mo<12){counts[mo]++;yearTotal++;}
+    });
+    var total=(allClients||[]).length;
+    document.getElementById('reportMonthTotal').textContent=counts[month];
+    document.getElementById('reportYearTotal').textContent=yearTotal;
+    document.getElementById('reportAllTotal').textContent=total;
+    document.getElementById('reportMonthLabel').textContent=names[month]+' check-ups';
+    document.getElementById('reportChartSubtitle').textContent='Appointments scheduled during '+year;
+
+    var max=Math.max.apply(null,counts.concat([1]));
+    document.getElementById('monthlyBarChart').innerHTML=names.map(function(n,i){
+      var pct=Math.max(2,Math.round((counts[i]/max)*100));
+      return '<div class="month-bar-col'+(i===month?' selected':'')+'">'+
+        '<div class="month-bar-value">'+counts[i]+'</div>'+
+        '<div class="month-bar-track"><div class="month-bar" style="height:'+pct+'%"></div></div>'+
+        '<div class="month-bar-label">'+n.substring(0,3)+'</div></div>';
+    }).join('');
+
+    document.getElementById('reportMonthlyRows').innerHTML=names.map(function(n,i){
+      return '<tr'+(i===month?' class="selected"':'')+'><td>'+n+'</td><td>'+counts[i]+'</td></tr>';
+    }).join('');
+    document.getElementById('reportStatus').textContent='Showing '+year+' appointment records.';
+  };
+
+  window.refreshMonthlyReports=function(){
+    if(!adminLoggedIn)return;
+    var status=document.getElementById('reportStatus');
+    status.textContent='Loading latest records from Google Sheet…';
+    fetch(scriptURL+'?action=getClients&password='+encodeURIComponent(adminPasswordForSession),{cache:'no-store'})
+      .then(function(r){if(!r.ok)throw new Error('Network error');return r.json();})
+      .then(function(data){
+        if(data.result!=='success')throw new Error(data.message||'Unable to load reports.');
+        allClients=data.clients||[];
+        var yearEl=document.getElementById('reportYear'),monthEl=document.getElementById('reportMonth');
+        var today=new Date(),years=new Set([today.getFullYear()]);
+        allClients.forEach(function(c){var m=/^(\d{4})-/.exec(String(c.date||''));if(m)years.add(Number(m[1]));});
+        var old=yearEl.value;
+        yearEl.innerHTML=Array.from(years).sort(function(a,b){return b-a;}).map(function(y){return '<option value="'+y+'">'+y+'</option>';}).join('');
+        yearEl.value=(old&&years.has(Number(old)))?old:String(today.getFullYear());
+        if(!monthEl.dataset.initialized){monthEl.value=String(today.getMonth());monthEl.dataset.initialized='1';}
+        renderMonthlyReports();
+      })
+      .catch(function(err){status.textContent='Could not load reports: '+err.message;});
+  };
+})();
+</script>
 <script id="adminMenuFinalScript">
 function showAdminPanelSection(section){
     var sections={
         clients:document.getElementById('adminPanelClients'),
         slots:document.getElementById('adminPanelSlots'),
-        announcements:document.getElementById('adminPanelAnnouncements')
+        announcements:document.getElementById('adminPanelAnnouncements'),
+        reports:document.getElementById('adminPanelReports')
     };
     Object.keys(sections).forEach(function(k){
         if(sections[k]) sections[k].classList.toggle('active',k===section);
     });
-    ['adminNavClients','adminNavSlots','adminNavAnnouncements'].forEach(function(id){
+    ['adminNavClients','adminNavSlots','adminNavAnnouncements','adminNavReports'].forEach(function(id){
         var b=document.getElementById(id);
         if(b) b.classList.remove('active');
     });
-    var active={clients:'adminNavClients',slots:'adminNavSlots',announcements:'adminNavAnnouncements'}[section];
+    var active={clients:'adminNavClients',slots:'adminNavSlots',announcements:'adminNavAnnouncements',reports:'adminNavReports'}[section];
     if(active && document.getElementById(active)) document.getElementById(active).classList.add('active');
+    if(section==='reports') refreshMonthlyReports();
     if(section==='slots' && typeof loadScheduleSettings==='function'){
         setTimeout(loadScheduleSettings,100);
     }
 }
 </script>
+
+<div id="adminPrintArea" style="display:none;"></div>
 
 </body>
 </html>
